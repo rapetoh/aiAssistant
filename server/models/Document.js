@@ -15,6 +15,10 @@ const documentSchema = new mongoose.Schema({
     required: true,
     enum: ['pdf', 'txt', 'doc', 'docx']
   },
+  filePath: {
+    type: String,
+    required: true
+  },
   uploadDate: {
     type: Date,
     default: Date.now
