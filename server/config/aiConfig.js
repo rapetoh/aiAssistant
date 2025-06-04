@@ -9,15 +9,14 @@ const serverDir = join(__dirname, '..');
 
 export const AI_CONFIG = {
   // Default AI provider (can be 'local' or 'openai')
-  defaultProvider: 'openai',
+  defaultProvider: 'local',
   
-  // Local AI settings (Llama)
+  // Local AI settings (Ollama)
   local: {
-    modelPath: join(serverDir, 'models', 'llama-2-7b-chat.Q8_0.gguf'),
-    contextSize: 2048,
-    batchSize: 512,
-    threads: 4,
-    temperature: 0.7
+    baseUrl: 'http://127.0.0.1:11434',
+    model: 'gemma3:4b',
+    temperature: 0.7,
+    contextSize: 2048
   },
   
   // OpenAI settings

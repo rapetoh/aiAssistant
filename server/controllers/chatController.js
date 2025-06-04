@@ -56,26 +56,43 @@ export const addMessage = async (req, res) => {
 
     // Add user message
     chat.messages.push({ role, content });
+    await chat.save();
+    
+    // Set up streaming response
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+    
+    let fullResponse = '';
     
     try {
       // Get AI response using the specified provider or chat's default
       const aiResponse = await aiService.generateResponse(
         chat.messages,
-        provider || chat.provider
+        provider || chat.provider,
+        (chunk) => {
+          fullResponse += chunk;
+          res.write(`data: ${JSON.stringify({ chunk })}\n\n`);
+        }
       );
       
-      // Add AI response
-      chat.messages.push({ role: 'assistant', content: aiResponse });
+      // Add AI response to chat history
+      chat.messages.push({ role: 'assistant', content: fullResponse });
+      await chat.save();
+      
+      // Send end of stream
+      res.write(`data: ${JSON.stringify({ done: true })}\n\n`);
+      res.end();
     } catch (error) {
       console.error('Error generating AI response:', error);
       chat.messages.push({ 
         role: 'assistant', 
         content: 'Sorry, I encountered an error while processing your request.' 
       });
+      await chat.save();
+      res.write(`data: ${JSON.stringify({ error: 'Error generating response' })}\n\n`);
+      res.end();
     }
-
-    await chat.save();
-    res.json(chat);
   } catch (error) {
     console.error('Error adding message:', error);
     res.status(500).json({ message: 'Error adding message', error: error.message });
