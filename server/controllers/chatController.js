@@ -9,7 +9,7 @@ export const createChat = async (req, res) => {
     const chat = new Chat({
       title: title || 'New Chat',
       messages: [],
-      provider: provider || 'local' // Store the AI provider preference
+      provider: provider || 'openai' // Store the AI provider preference
     });
     await chat.save();
     res.status(201).json(chat);

@@ -11,13 +11,13 @@ export const AI_CONFIG = {
   // Default AI provider (can be 'local' or 'openai')
   defaultProvider: 'openai',
   
-  // Local AI settings (Ollama)
-  local: {
-    baseUrl: 'http://127.0.0.1:11434',
-    model: 'gemma3:4b',
-    temperature: 0.7,
-    contextSize: 2048
-  },
+  // // Local AI settings (Ollama)
+  // local: {
+  //   baseUrl: 'http://127.0.0.1:11434',
+  //   model: 'gemma3:4b',
+  //   temperature: 0.7,
+  //   contextSize: 2048
+  // },
   
   // OpenAI settings
   openai: {
