@@ -1,4 +1,27 @@
 :root {
+  --color-bg: #f5f5f5;
+  --color-bg-alt: #fff;
+  --color-text: #222;
+  --color-primary: #007bff;
+  --color-primary-hover: #0056b3;
+  --color-border: #e0e0e0;
+  --color-sidebar: #fff;
+  --color-sidebar-header: #f8f9fa;
+  --color-chat-item-active: #e9ecef;
+  --color-chat-item-hover: #f8f9fa;
+  --color-assistant-bg: #e9ecef;
+  --color-user-bg: #007bff;
+  --color-user-text: #fff;
+  --color-assistant-text: #212529;
+  --color-danger: #dc3545;
+  --color-success: #28a745;
+  --color-muted: #666;
+  --color-input-bg: #fff;
+  --color-input-border: #ddd;
+  --color-input-text: #222;
+  --color-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  --transition: background 0.2s, color 0.2s, border 0.2s;
+
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
@@ -13,13 +36,34 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
+[data-theme="dark"] {
+  --color-bg: #181a20;
+  --color-bg-alt: #23262f;
+  --color-text: #f5f6fa;
+  --color-primary: #4f8cff;
+  --color-primary-hover: #3761b3;
+  --color-border: #23262f;
+  --color-sidebar: #23262f;
+  --color-sidebar-header: #23262f;
+  --color-chat-item-active: #23262f;
+  --color-chat-item-hover: #23262f;
+  --color-assistant-bg: #23262f;
+  --color-user-bg: #4f8cff;
+  --color-user-text: #fff;
+  --color-assistant-text: #f5f6fa;
+  --color-danger: #ff4d4f;
+  --color-success: #28a745;
+  --color-muted: #aaa;
+  --color-input-bg: #181a20;
+  --color-input-border: #23262f;
+  --color-input-text: #f5f6fa;
+  --color-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
-a:hover {
-  color: #535bf2;
+
+html, body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  transition: var(--transition);
 }
 
 body {
@@ -65,4 +109,8 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
+}
+
+* {
+  box-sizing: border-box;
 }

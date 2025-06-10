@@ -30,14 +30,10 @@ class AIService {
 
         return response.choices[0].message.content;
       } else if (provider === 'local') {
-        // Get only the most recent user message
-        const lastUserMessage = messages.filter(msg => msg.role === 'user').pop();
-        if (!lastUserMessage) {
-          throw new Error('No user message found');
-        }
-
-        // Create a simple prompt with just the last message
-        const prompt = `Human: ${lastUserMessage.content}\nAssistant:`;
+        // Build prompt from full chat history
+        const prompt = messages
+          .map(msg => `${msg.role === 'user' ? 'Human' : 'Assistant'}: ${msg.content}`)
+          .join('\n') + '\nAssistant:';
         
         console.log('=== Ollama Request Details ===');
         console.log('URL:', `${AI_CONFIG.local.baseUrl}/api/generate`);

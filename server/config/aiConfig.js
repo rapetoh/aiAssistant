@@ -9,7 +9,7 @@ const serverDir = join(__dirname, '..');
 
 export const AI_CONFIG = {
   // Default AI provider (can be 'local' or 'openai')
-  defaultProvider: 'local',
+  defaultProvider: 'openai',
   
   // Local AI settings (Ollama)
   local: {
@@ -21,10 +21,12 @@ export const AI_CONFIG = {
   
   // OpenAI settings
   openai: {
+    baseUrl: 'https://api.groq.com/openai/v1/chat/completions',
     enabled: true,
-    apiKey: 'REMOVEDproj-oCRk9Ri7HsFIL28_JjrvVO4qhFfokS-Jxs2Sc8LFKj8wK6MOHz5-5IomIrEN0DZMy-M93XTN4XT3BlbkFJmfhbWFPHCn72tYmr1Ha1gD7A63iL1CU_jGD0JYtv7aToIxAMORgGvhZSNKjv4M-4lx_E8dVcYA', // Replace this with your actual OpenAI API key
-    model: 'gpt-3.5-turbo',
+    apiKey: '	Bearer REMOVED', // Replace this with your actual OpenAI API key
+    model: 'meta-llama/llama-4-scout-17b-16e-instruct',
     temperature: 0.7,
   }
+
 };
   

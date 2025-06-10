@@ -23,6 +23,7 @@ export const chatService = {
 
   // Send a message with streaming support
   sendMessage: async (chatId, content, onChunk, onDone, onError) => {
+    
     try {
       const response = await fetch(`${API_URL}/${chatId}/messages`, {
         method: 'POST',

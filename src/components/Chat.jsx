@@ -2,6 +2,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import { chatService } from '../services/chatService';
 import './Chat.css';
 
+const Spinner = () => (
+  <div className="spinner-container">
+    <div className="spinner" />
+  </div>
+);
+
 const Chat = ({ chatId }) => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
@@ -82,6 +88,7 @@ const Chat = ({ chatId }) => {
             <div className="message-content">{currentStreamingMessage}</div>
           </div>
         )}
+        {isLoading && !currentStreamingMessage && <Spinner />}
         <div ref={messagesEndRef} />
       </div>
       <form onSubmit={handleSubmit} className="input-form">
