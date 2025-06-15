@@ -8,6 +8,31 @@
   overflow: hidden; /* Important for internal scrolling */
 }
 
+.chat-actions-bar {
+  display: flex;
+  justify-content: flex-end; /* Align to the right */
+  padding-bottom: 20px; /* Space below the bar */
+  margin-bottom: 15px; /* Space between action bar and messages */
+  border-bottom: 1px solid var(--color-border); /* Subtle separator */
+}
+
+.export-chat-button {
+  background-color: var(--color-input-bg);
+  color: var(--color-text-secondary);
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-size: 0.95em;
+  font-weight: 500;
+  gap: 8px;
+  transition: all 0.2s var(--ease-out-quad);
+}
+
+.export-chat-button:hover {
+  background-color: var(--color-primary);
+  color: var(--color-light-bg-secondary);
+  box-shadow: 0 2px 8px rgba(var(--color-primary-rgb), 0.2);
+}
+
 .messages-container {
   flex: 1;
   overflow-y: auto;

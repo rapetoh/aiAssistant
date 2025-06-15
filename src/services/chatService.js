@@ -4,8 +4,8 @@ const API_URL = 'http://localhost:5000/api/chat';
 
 export const chatService = {
   // Create a new chat
-  createChat: async (title, provider = 'local') => {
-    const response = await axios.post(API_URL, { title, provider });
+  createChat: async (title) => {
+    const response = await axios.post(API_URL, { title });
     return response.data;
   },
 
@@ -23,7 +23,8 @@ export const chatService = {
 
   // Send a message with streaming support
   sendMessage: async (chatId, content, onChunk, onDone, onError) => {
-    
+    let fullResponseContent = ''; // Accumulate the full response here
+
     try {
       const response = await fetch(`${API_URL}/${chatId}/messages`, {
         method: 'POST',
@@ -51,10 +52,11 @@ export const chatService = {
             try {
               const data = JSON.parse(line.slice(6));
               if (data.chunk) {
+                fullResponseContent += data.chunk; // Accumulate chunks
                 onChunk(data.chunk);
               }
               if (data.done) {
-                onDone();
+                onDone(fullResponseContent); // Pass the accumulated full response
               }
               if (data.error) {
                 onError(data.error);

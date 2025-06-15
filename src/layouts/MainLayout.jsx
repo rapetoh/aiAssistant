@@ -30,14 +30,16 @@ const MainLayout = () => {
   };
 
   const handleCreateChat = async (title) => {
+    console.log('MainLayout: handleCreateChat triggered with title:', title);
     try {
       const newChat = await chatService.createChat(title);
+      console.log('MainLayout: Chat created successfully:', newChat);
       setChats(prev => [newChat, ...prev]);
       setCurrentChatId(newChat._id);
       navigate(`/chat/${newChat._id}`);
       return newChat;
     } catch (error) {
-      console.error('Error creating chat:', error);
+      console.error('MainLayout: Error creating chat:', error);
       throw error;
     }
   };
@@ -69,7 +71,7 @@ const MainLayout = () => {
         onChatDelete={handleDeleteChat}
       />
       <div className="main-content">
-        <Outlet />
+        <Outlet context={{ chats, handleCreateChat, handleDeleteChat }} />
       </div>
     </div>
   );

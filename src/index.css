@@ -3,39 +3,41 @@
   --ease-out-quad: cubic-bezier(0.25, 0.46, 0.45, 0.94);
 
   /* Light Theme Colors */
-  --color-light-bg: #fdfbf2; /* Very light creamy background */
-  --color-light-bg-secondary: #ffffff; /* Pure white for secondary backgrounds */
-  --color-light-text: #231650; /* Darkest color for main text */
-  --color-light-text-secondary: #612E37; /* Darker secondary text */
-  --color-light-border: #e0d7c7; /* Light border derived from accent/bg */
-  --color-light-primary: #F3742B; /* Vibrant orange */
-  --color-light-primary-hover: #B83A14; /* Darker orange for hover */
-  --color-light-accent: #FED172; /* Lightest color for accent */
+  --color-light-bg: #FAEBFF; /* Primary light background */
+  --color-light-bg-secondary: #FFFFFF; /* Pure white for secondary backgrounds */
+  --color-light-text: #333D79; /* Dark blue for main text */
+  --color-light-text-secondary: var(--color-light-text); /* Ensure good contrast for secondary text in light mode */
+  --color-light-border: rgba(51, 61, 121, 0.1); /* Subtle border based on dark color */
+  --color-light-primary: #333D79; /* Dark blue as primary accent */
+  --color-light-primary-hover: #2A3366; /* Slightly darker blue for hover */
+  --color-light-accent: #FAEBFF; /* Light color for accent */
   --color-light-success: #2ecc71; /* Keep default green */
   --color-light-danger: #e74c3c; /* Keep default red */
-  --color-light-input-bg: #f5f0e6; /* Light input background */
-  --color-light-input-border: #d8d0c2; /* Medium light input border */
-  --color-light-shadow: rgba(35, 22, 80, 0.08); /* Shadow from dark text */
-  --color-light-text-rgb: 35, 22, 80;
-  --color-light-primary-rgb: 243, 116, 43;
+  --color-light-input-bg: rgba(51, 61, 121, 0.05); /* Very subtle dark blue tint for input */
+  --color-light-input-border: rgba(51, 61, 121, 0.2); /* Slightly more opaque dark blue for input border */
+  --color-light-shadow: rgba(51, 61, 121, 0.15); /* Shadow based on dark blue */
+  --color-light-text-rgb: 51, 61, 121;
+  --color-light-primary-rgb: 51, 61, 121;
+  --color-active-link-text: var(--color-light-text); /* Corrected: Should be dark text on light background */
 
   /* Dark Theme Colors */
-  --color-dark-bg: #231650; /* Darkest color for main background */
-  --color-dark-bg-secondary: #612E37; /* Secondary background, next darkest */
-  --color-dark-text: #FED172; /* Lightest color for main text */
-  --color-dark-text-secondary: #F3742B; /* Vibrant orange for secondary text */
-  --color-dark-border: #3a2745; /* Dark border derived from bg/bg-secondary */
-  --color-dark-primary: #F3742B; /* Vibrant orange */
-  --color-dark-primary-hover: #B83A14; /* Darker orange for hover */
-  --color-dark-accent: #FED172; /* Lightest color for accent */
+  --color-dark-bg: #333D79; /* Dark blue for main background */
+  --color-dark-bg-secondary: #444C8D; /* Slightly lighter dark blue for secondary backgrounds */
+  --color-dark-text: #FAEBFF; /* Light color for main text */
+  --color-dark-text-secondary: var(--color-dark-text); /* Ensure good contrast for secondary text in dark mode */
+  --color-dark-border: #555E9E; /* Slightly lighter dark blue for border */
+  --color-dark-primary: #FAEBFF; /* Light color as primary accent */
+  --color-dark-primary-hover: rgba(250, 235, 255, 0.8); /* Slightly transparent light color for hover */
+  --color-dark-accent: rgba(250, 235, 255, 0.7); /* Adjusted for better gradient visibility in dark mode */
   --color-dark-success: #88c0d0; /* Keep default blue-green */
   --color-dark-danger: #bf616a; /* Keep default red */
-  --color-dark-input-bg: #2d1f3b; /* Dark input background */
-  --color-dark-input-border: #4f3b5c; /* Medium dark input border */
-  --color-dark-shadow: rgba(243, 116, 43, 0.15); /* Shadow from primary color */
-  --color-dark-bg-rgb: 35, 22, 80;
-  --color-dark-primary-rgb: 243, 116, 43;
-  --color-dark-accent-rgb: 254, 209, 114;
+  --color-dark-input-bg: #2A3366; /* Darker blue for input background */
+  --color-dark-input-border: #6672B1; /* Lighter dark blue for input border */
+  --color-dark-shadow: rgba(250, 235, 255, 0.15); /* Shadow based on light color */
+  --color-dark-bg-rgb: 51, 61, 121;
+  --color-dark-primary-rgb: 250, 235, 255;
+  --color-dark-accent-rgb: 250, 235, 255; /* RGB for the new accent color */
+  --color-active-link-text: var(--color-dark-text); /* Corrected: Should be light text on dark background */
 }
 
 /* Apply theme variables */
@@ -53,6 +55,7 @@
   --color-input-bg: var(--color-light-input-bg);
   --color-input-border: var(--color-light-input-border);
   --color-shadow: var(--color-light-shadow);
+  --color-active-link-text: var(--color-light-text); /* Ensure consistency for light theme */
 }
 
 [data-theme="dark"] {
@@ -69,6 +72,7 @@
   --color-input-bg: var(--color-dark-input-bg);
   --color-input-border: var(--color-dark-input-border);
   --color-shadow: var(--color-dark-shadow);
+  --color-active-link-text: var(--color-dark-text); /* Ensure consistency for dark theme */
 }
 
 html, body {

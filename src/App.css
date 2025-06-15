@@ -179,7 +179,7 @@
 
 .main-content {
   flex: 1;
-  background-color: var(--color-bg-alt);
+  background-color: var(--color-bg-alt) !important;
   border-radius: 12px;
   display: flex;
   flex-direction: column;

@@ -7,12 +7,16 @@ const Welcome = () => {
   const navigate = useNavigate();
 
   const handleSuggestionClick = async (suggestionText) => {
+    console.log('Welcome: Suggestion click triggered for:', suggestionText);
     try {
+      console.log('Welcome: Attempting to create new chat via chatService...');
       const newChat = await chatService.createChat('New Chat'); // Create a new chat for the suggestion
+      console.log('Welcome: New chat created successfully:', newChat);
       await chatService.sendMessage(newChat._id, suggestionText);
+      console.log('Welcome: Message sent to new chat, navigating...');
       navigate(`/chat/${newChat._id}`);
     } catch (error) {
-      console.error('Error handling suggestion:', error);
+      console.error('Welcome: Error handling suggestion/creating chat:', error);
       // Optionally, show an error message to the user
     }
   };
