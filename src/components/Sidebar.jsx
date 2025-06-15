@@ -3,17 +3,19 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import './Sidebar.css';
 import { useTheme } from '../context/ThemeContext';
 
-const SunIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-);
-const MoonIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/></svg>
-);
+// Icons (using simple SVGs for now, can be replaced with an icon library later)
+const SunIcon = () => (<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>);
+const MoonIcon = () => (<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/></svg>);
+const HomeIcon = () => (<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>);
+const ChatIcon = () => (<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V3a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>);
+const DocumentIcon = () => (<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>);
+const SettingsIcon = () => (<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0-.33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V12h.09a1.65 1.65 0 0 0 1.51 1z"></path></svg>);
+
 
 const Sidebar = ({ 
   chats = [], 
   currentChatId, 
-  onChatSelect, 
+  onChatSelect, // This prop is now primarily handled by NavLink internal logic
   onChatCreate, 
   onChatDelete 
 }) => {
@@ -41,7 +43,7 @@ const Sidebar = ({
   return (
     <div className="sidebar">
       <div className="sidebar-header">
-        <h2>AI Chat</h2>
+        <h2>AI Assistant</h2>
         <div className="sidebar-header-actions">
           <button 
             className="theme-toggle-button"
@@ -54,20 +56,20 @@ const Sidebar = ({
             className="new-chat-button"
             onClick={() => setIsCreatingChat(true)}
           >
-            New Chat
+            <ChatIcon /> New Chat
           </button>
         </div>
       </div>
 
       <nav className="sidebar-nav">
         <NavLink to="/" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'} end>
-          Home
+          <HomeIcon /> Home
         </NavLink>
         <NavLink to="/documents" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
-          Documents
+          <DocumentIcon /> Documents
         </NavLink>
         <NavLink to="/settings" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
-          Settings
+          <SettingsIcon /> Settings
         </NavLink>
       </nav>
 
@@ -91,23 +93,26 @@ const Sidebar = ({
 
       <div className="chat-list">
         {chats.map(chat => (
-          <div
+          <NavLink
             key={chat._id}
-            className={`chat-item ${currentChatId === chat._id ? 'active' : ''}`}
+            to={`/chat/${chat._id}`}
+            className={({ isActive }) => 
+              `chat-item ${isActive || currentChatId === chat._id ? 'active' : ''}`
+            }
           >
-            <button
-              className="chat-title"
-              onClick={() => navigate(`/chat/${chat._id}`)}
-            >
-              {chat.title}
-            </button>
+            <ChatIcon />
+            <span className="chat-title">{chat.title}</span>
             <button
               className="delete-chat"
-              onClick={() => onChatDelete && onChatDelete(chat._id)}
+              onClick={(e) => {
+                e.preventDefault(); // Prevent navigating when deleting
+                e.stopPropagation(); // Stop event from bubbling to NavLink
+                onChatDelete && onChatDelete(chat._id);
+              }}
             >
               ×
             </button>
-          </div>
+          </NavLink>
         ))}
       </div>
     </div>

@@ -1,101 +1,188 @@
 .chat-container {
   display: flex;
   flex-direction: column;
-  height: 100vh;
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: #f5f5f5;
+  height: 100%;
+  padding: 25px; /* Slightly more padding */
+  background-color: var(--color-bg-alt);
+  border-radius: 12px;
+  overflow: hidden; /* Important for internal scrolling */
 }
 
 .messages-container {
   flex: 1;
   overflow-y: auto;
-  padding: 20px;
-  background-color: white;
-  border-radius: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding-right: 12px; /* More space for scrollbar */
   margin-bottom: 20px;
 }
 
-.message {
-  margin-bottom: 15px;
-  max-width: 80%;
+.message-row {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 20px; /* More space between messages */
+  gap: 15px; /* More space between avatar and bubble */
 }
 
-.message.user {
-  margin-left: auto;
+.message-row.user {
+  justify-content: flex-end;
 }
 
-.message.assistant {
-  margin-right: auto;
+.message-row.assistant {
+  justify-content: flex-start;
+}
+
+.avatar-wrapper {
+  flex-shrink: 0;
+  width: 40px; /* Slightly larger avatar */
+  height: 40px; /* Slightly larger avatar */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-weight: bold;
+  color: var(--color-light-bg-secondary);
+  font-size: 1em; /* Slightly larger avatar text */
+}
+
+.user-avatar {
+  background-color: var(--color-primary);
+}
+
+.assistant-avatar {
+  background-color: var(--color-accent);
+}
+
+.message-bubble {
+  max-width: 70%; /* Slightly narrower for better line length */
+  padding: 14px 20px; /* More padding inside bubble */
+  border-radius: 24px; /* More rounded */
+  line-height: 1.6; /* Improved readability */
+  word-wrap: break-word;
+  box-shadow: 0 4px 15px rgba(var(--color-dark-bg-rgb), 0.08); /* Softer, larger shadow */
+}
+
+.message-row.user .message-bubble {
+  background-color: var(--color-primary);
+  color: var(--color-light-bg-secondary);
+  border-bottom-right-radius: 8px; /* More subtle tail effect */
+}
+
+.message-row.assistant .message-bubble {
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-bottom-left-radius: 8px; /* More subtle tail effect */
 }
 
 .message-content {
-  padding: 12px 16px;
-  border-radius: 15px;
-  font-size: 16px;
-  line-height: 1.4;
+  font-size: 1.05em; /* Slightly larger message text */
 }
 
-.message.user .message-content {
-  background-color: #007bff;
-  color: white;
-  border-top-right-radius: 5px;
+/* Markdown Basic Styling for messages */
+.message-content pre,
+.message-content code {
+  font-family: 'Fira Code', 'Consolas', 'Monaco', 'Andale Mono', 'Ubuntu Mono', monospace;
+  background-color: var(--color-input-bg);
+  padding: 8px 12px; /* More padding for code */
+  border-radius: 8px; /* More rounded */
+  overflow-x: auto;
+  font-size: 0.95em; /* Slightly larger code font */
 }
 
-.message.assistant .message-content {
-  background-color: #e9ecef;
-  color: #212529;
-  border-top-left-radius: 5px;
+.message-content pre {
+  padding: 15px; /* More padding for pre blocks */
+  border: 1px solid var(--color-border);
 }
 
+.message-content p {
+  margin: 0 0 10px 0; /* More space below paragraphs */
+}
+
+.message-content p:last-child {
+  margin-bottom: 0;
+}
+
+.message-content ul, .message-content ol {
+  margin: 10px 0; /* More space for lists */
+  padding-left: 25px; /* More indentation */
+}
+
+.message-content li {
+  margin-bottom: 6px; /* More space between list items */
+}
+
+.message-content h1, .message-content h2, .message-content h3, .message-content h4, .message-content h5, .message-content h6 {
+  color: var(--color-text);
+  margin-top: 1.2em; /* More space above headings */
+  margin-bottom: 0.6em; /* More space below headings */
+}
+
+/* Input Form */
 .input-form {
   display: flex;
-  gap: 10px;
+  align-items: center;
+  gap: 15px; /* More space between input and button */
+  padding: 20px; /* More padding */
+  background-color: var(--color-bg-secondary);
+  border-radius: 16px; /* More rounded */
+  box-shadow: 0 -6px 20px var(--color-shadow); /* More pronounced shadow */
+  flex-shrink: 0;
 }
 
 .input-form input {
   flex: 1;
-  padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  font-size: 16px;
+  border: 1px solid var(--color-input-border);
+  border-radius: 30px; /* More rounded pill shape */
+  padding: 14px 25px; /* More padding */
+  font-size: 1.05em; /* Slightly larger font */
+  background-color: var(--color-input-bg);
+  color: var(--color-text);
+  transition: all 0.2s var(--ease-out-quad);
+}
+
+.input-form input:focus {
+  border-color: var(--color-primary); /* Primary color on focus */
+  box-shadow: 0 0 0 4px rgba(var(--color-primary-rgb), 0.2); /* More pronounced focus shadow */
 }
 
 .input-form button {
-  padding: 12px 24px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background-color 0.2s;
+  background-color: var(--color-primary);
+  color: var(--color-light-bg-secondary);
+  border-radius: 50%;
+  width: 48px; /* Slightly larger button */
+  height: 48px; /* Slightly larger button */
+  min-width: 48px;
+  min-height: 48px;
+  font-size: 1.3em; /* Slightly larger icon */
+  box-shadow: 0 4px 15px rgba(var(--color-primary-rgb), 0.3); /* More pronounced shadow */
+  transition: all 0.2s var(--ease-out-quad);
 }
 
-.input-form button:hover {
-  background-color: #0056b3;
+.input-form button:hover:not(:disabled) {
+  background-color: var(--color-primary-hover);
+  transform: translateY(-3px); /* More noticeable lift */
+  box-shadow: 0 6px 20px rgba(var(--color-primary-rgb), 0.4); /* More pronounced shadow on hover */
 }
 
 .input-form button:disabled {
-  background-color: #ccc;
+  opacity: 0.5;
   cursor: not-allowed;
+  box-shadow: none;
 }
 
+/* Spinner Styling */
 .spinner-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 16px 0;
-  height: 40px;
+  height: 50px; /* Slightly taller */
+  margin: 15px 0; /* More margin */
 }
 
 .spinner {
-  width: 32px;
-  height: 32px;
-  border: 4px solid #e0e0e0;
-  border-top: 4px solid var(--color-primary);
+  width: 35px; /* Slightly larger */
+  height: 35px; /* Slightly larger */
+  border: 4px solid var(--color-border); /* Thicker border */
+  border-top: 4px solid var(--color-primary); /* Thicker border */
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -103,4 +190,81 @@
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .chat-container {
+    padding: 18px; /* Adjusted padding for small screens */
+  }
+
+  .messages-container {
+    margin-bottom: 18px;
+    padding-right: 8px;
+  }
+
+  .message-row {
+    margin-bottom: 15px;
+    gap: 10px;
+  }
+
+  .avatar-wrapper {
+    width: 32px;
+    height: 32px;
+    font-size: 0.8em;
+  }
+
+  .message-bubble {
+    max-width: 85%;
+    padding: 10px 15px;
+    border-radius: 18px;
+  }
+
+  .message-content {
+    font-size: 0.95em;
+  }
+
+  .message-content pre,
+  .message-content code {
+    padding: 6px 10px;
+    font-size: 0.85em;
+  }
+
+  .message-content pre {
+    padding: 12px;
+  }
+
+  .message-content p {
+    margin: 0 0 6px 0;
+  }
+
+  .input-form {
+    padding: 15px;
+    gap: 10px;
+    border-radius: 12px;
+  }
+
+  .input-form input {
+    padding: 10px 18px;
+    font-size: 0.95em;
+  }
+
+  .input-form button {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    min-height: 40px;
+    font-size: 1.1em;
+  }
+
+  .spinner-container {
+    height: 40px;
+    margin: 10px 0;
+  }
+
+  .spinner {
+    width: 25px;
+    height: 25px;
+    border-width: 3px;
+  }
 } 

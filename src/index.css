@@ -1,116 +1,136 @@
 :root {
-  --color-bg: #f5f5f5;
-  --color-bg-alt: #fff;
-  --color-text: #222;
-  --color-primary: #007bff;
-  --color-primary-hover: #0056b3;
-  --color-border: #e0e0e0;
-  --color-sidebar: #fff;
-  --color-sidebar-header: #f8f9fa;
-  --color-chat-item-active: #e9ecef;
-  --color-chat-item-hover: #f8f9fa;
-  --color-assistant-bg: #e9ecef;
-  --color-user-bg: #007bff;
-  --color-user-text: #fff;
-  --color-assistant-text: #212529;
-  --color-danger: #dc3545;
-  --color-success: #28a745;
-  --color-muted: #666;
-  --color-input-bg: #fff;
-  --color-input-border: #ddd;
-  --color-input-text: #222;
-  --color-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  --transition: background 0.2s, color 0.2s, border 0.2s;
+  --font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  --ease-out-quad: cubic-bezier(0.25, 0.46, 0.45, 0.94);
 
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+  /* Light Theme Colors */
+  --color-light-bg: #fdfbf2; /* Very light creamy background */
+  --color-light-bg-secondary: #ffffff; /* Pure white for secondary backgrounds */
+  --color-light-text: #231650; /* Darkest color for main text */
+  --color-light-text-secondary: #612E37; /* Darker secondary text */
+  --color-light-border: #e0d7c7; /* Light border derived from accent/bg */
+  --color-light-primary: #F3742B; /* Vibrant orange */
+  --color-light-primary-hover: #B83A14; /* Darker orange for hover */
+  --color-light-accent: #FED172; /* Lightest color for accent */
+  --color-light-success: #2ecc71; /* Keep default green */
+  --color-light-danger: #e74c3c; /* Keep default red */
+  --color-light-input-bg: #f5f0e6; /* Light input background */
+  --color-light-input-border: #d8d0c2; /* Medium light input border */
+  --color-light-shadow: rgba(35, 22, 80, 0.08); /* Shadow from dark text */
+  --color-light-text-rgb: 35, 22, 80;
+  --color-light-primary-rgb: 243, 116, 43;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  /* Dark Theme Colors */
+  --color-dark-bg: #231650; /* Darkest color for main background */
+  --color-dark-bg-secondary: #612E37; /* Secondary background, next darkest */
+  --color-dark-text: #FED172; /* Lightest color for main text */
+  --color-dark-text-secondary: #F3742B; /* Vibrant orange for secondary text */
+  --color-dark-border: #3a2745; /* Dark border derived from bg/bg-secondary */
+  --color-dark-primary: #F3742B; /* Vibrant orange */
+  --color-dark-primary-hover: #B83A14; /* Darker orange for hover */
+  --color-dark-accent: #FED172; /* Lightest color for accent */
+  --color-dark-success: #88c0d0; /* Keep default blue-green */
+  --color-dark-danger: #bf616a; /* Keep default red */
+  --color-dark-input-bg: #2d1f3b; /* Dark input background */
+  --color-dark-input-border: #4f3b5c; /* Medium dark input border */
+  --color-dark-shadow: rgba(243, 116, 43, 0.15); /* Shadow from primary color */
+  --color-dark-bg-rgb: 35, 22, 80;
+  --color-dark-primary-rgb: 243, 116, 43;
+  --color-dark-accent-rgb: 254, 209, 114;
+}
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* Apply theme variables */
+[data-theme="light"] {
+  --color-bg: var(--color-light-bg);
+  --color-bg-alt: var(--color-light-bg-secondary);
+  --color-text: var(--color-light-text);
+  --color-text-secondary: var(--color-light-text-secondary);
+  --color-border: var(--color-light-border);
+  --color-primary: var(--color-light-primary);
+  --color-primary-hover: var(--color-light-primary-hover);
+  --color-accent: var(--color-light-accent);
+  --color-success: var(--color-light-success);
+  --color-danger: var(--color-light-danger);
+  --color-input-bg: var(--color-light-input-bg);
+  --color-input-border: var(--color-light-input-border);
+  --color-shadow: var(--color-light-shadow);
 }
 
 [data-theme="dark"] {
-  --color-bg: #181a20;
-  --color-bg-alt: #23262f;
-  --color-text: #f5f6fa;
-  --color-primary: #4f8cff;
-  --color-primary-hover: #3761b3;
-  --color-border: #23262f;
-  --color-sidebar: #23262f;
-  --color-sidebar-header: #23262f;
-  --color-chat-item-active: #23262f;
-  --color-chat-item-hover: #23262f;
-  --color-assistant-bg: #23262f;
-  --color-user-bg: #4f8cff;
-  --color-user-text: #fff;
-  --color-assistant-text: #f5f6fa;
-  --color-danger: #ff4d4f;
-  --color-success: #28a745;
-  --color-muted: #aaa;
-  --color-input-bg: #181a20;
-  --color-input-border: #23262f;
-  --color-input-text: #f5f6fa;
-  --color-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  --color-bg: var(--color-dark-bg);
+  --color-bg-alt: var(--color-dark-bg-secondary);
+  --color-text: var(--color-dark-text);
+  --color-text-secondary: var(--color-dark-text-secondary);
+  --color-border: var(--color-dark-border);
+  --color-primary: var(--color-dark-primary);
+  --color-primary-hover: var(--color-dark-primary-hover);
+  --color-accent: var(--color-dark-accent);
+  --color-success: var(--color-dark-success);
+  --color-danger: var(--color-dark-danger);
+  --color-input-bg: var(--color-dark-input-bg);
+  --color-input-border: var(--color-dark-input-border);
+  --color-shadow: var(--color-dark-shadow);
 }
 
 html, body {
-  background: var(--color-bg);
-  color: var(--color-text);
-  transition: var(--transition);
-}
-
-body {
   margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
   min-height: 100vh;
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+  font-family: var(--font-family);
+  line-height: 1.6;
+  color: var(--color-text);
+  background-color: var(--color-bg);
+  transition: background-color 0.3s var(--ease-out-quad), color 0.3s var(--ease-out-quad);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 * {
   box-sizing: border-box;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg-secondary);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-secondary);
+}
+
+/* Basic button styles for consistency */
+button {
+  font-family: var(--font-family);
+  cursor: pointer;
+  border: none;
+  outline: none;
+  transition: all 0.2s var(--ease-out-quad);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+input, textarea {
+  font-family: var(--font-family);
+  border: 1px solid var(--color-input-border);
+  background-color: var(--color-input-bg);
+  color: var(--color-text);
+  padding: 10px 15px;
+  border-radius: 8px;
+  transition: all 0.2s var(--ease-out-quad);
+}
+
+input:focus, textarea:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(var(--color-primary), 0.2);
 }

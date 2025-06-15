@@ -1,11 +1,49 @@
 import React from 'react';
 import './Welcome.css';
+import { useNavigate } from 'react-router-dom';
+import { chatService } from '../services/chatService';
 
 const Welcome = () => {
+  const navigate = useNavigate();
+
+  const handleSuggestionClick = async (suggestionText) => {
+    try {
+      const newChat = await chatService.createChat('New Chat'); // Create a new chat for the suggestion
+      await chatService.sendMessage(newChat._id, suggestionText);
+      navigate(`/chat/${newChat._id}`);
+    } catch (error) {
+      console.error('Error handling suggestion:', error);
+      // Optionally, show an error message to the user
+    }
+  };
+
+  const suggestions = [
+    "What are the advantages of using Next.js?",
+    "Write code to demonstrate Dijkstra\'s algorithm",
+    "Help me write an essay about Silicon Valley",
+    "What is the weather in San Francisco?"
+  ];
+
+  // You can replace 'there' with a dynamic user name if available
+  const userName = "there"; 
+
   return (
-    <div className="welcome-message">
-      <h1>Welcome to AI Chat Assistant</h1>
-      <p>Create a new chat to start conversing with the AI.</p>
+    <div className="welcome-container">
+      <div className="welcome-header">
+        <h1>Hello {userName}!</h1>
+        <p>How can I help you today?</p>
+      </div>
+      <div className="suggestion-cards">
+        {suggestions.map((suggestion, index) => (
+          <button 
+            key={index} 
+            className="suggestion-card"
+            onClick={() => handleSuggestionClick(suggestion)}
+          >
+            {suggestion}
+          </button>
+        ))}
+      </div>
     </div>
   );
 };

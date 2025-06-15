@@ -1,18 +1,81 @@
-.welcome-message {
+.welcome-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   height: 100%;
   text-align: center;
-  color: #666;
+  padding: 40px 20px;
+  color: var(--color-text);
 }
 
-.welcome-message h1 {
-  font-size: 2em;
-  margin-bottom: 20px;
+.welcome-header {
+  margin-bottom: 50px;
 }
 
-.welcome-message p {
-  font-size: 1.2em;
+.welcome-header h1 {
+  font-size: 3.5em;
+  font-weight: 800;
+  margin-bottom: 15px;
+  color: var(--color-text);
+  background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.welcome-header p {
+  font-size: 1.6em;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.suggestion-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 25px;
+  max-width: 1000px;
+  width: 100%;
+}
+
+.suggestion-card {
+  background-color: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  padding: 25px;
+  text-align: left;
+  font-size: 1.15em;
+  color: var(--color-text);
+  box-shadow: 0 6px 20px rgba(var(--color-dark-bg-rgb), 0.08);
+  transition: all 0.3s var(--ease-out-quad);
+  height: 100%;
+  display: flex;
+  align-items: flex-start;
+  line-height: 1.5;
+}
+
+.suggestion-card:hover {
+  border-color: var(--color-primary);
+  box-shadow: 0 8px 25px rgba(var(--color-primary-rgb), 0.25), var(--color-shadow);
+  transform: translateY(-5px);
+}
+
+@media (max-width: 768px) {
+  .welcome-container {
+    padding: 30px 15px;
+  }
+
+  .welcome-header h1 {
+    font-size: 2.5em;
+  }
+  .welcome-header p {
+    font-size: 1.3em;
+  }
+  .suggestion-cards {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  .suggestion-card {
+    padding: 20px;
+    font-size: 1em;
+  }
 } 
