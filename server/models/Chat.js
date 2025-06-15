@@ -24,7 +24,7 @@ const chatSchema = new mongoose.Schema({
   messages: [messageSchema],
   provider: {
     type: String,
-    enum: ['local', 'openai'],
+    enum: ['local', 'cohere'],
     default: 'local'
   },
   context: {

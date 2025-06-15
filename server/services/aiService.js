@@ -3,113 +3,86 @@ import axios from 'axios';
 import { AI_CONFIG } from '../config/aiConfig.js';
 
 class AIService {
-  constructor() {
-    this.openai = null;
-    this.initializeOpenAI();
-  }
 
-  initializeOpenAI() {
-    if (AI_CONFIG.openai?.enabled && AI_CONFIG.openai?.apiKey) {
-      this.openai = new OpenAI({ apiKey: AI_CONFIG.openai.apiKey });
-      console.log('OpenAI initialized successfully');
-    }
-  }
 
   async generateResponse(messages, provider = AI_CONFIG.defaultProvider, onStream = null) {
     try {
-      if (provider == 'openai') {
-        if (!this.openai) {
-          throw new Error('OpenAI not initialized');
-        }
+      if (provider === 'cohere') {
+        // Clean messages to remove _id and timestamp fields
+        const cleanedMessages = messages.map(({ role, content }) => ({
+          role,
+          content
+        }));
 
-        const response = await this.openai.chat.completions.create({
-          model: AI_CONFIG.openai.model,
-          messages: messages,
-          temperature: AI_CONFIG.openai.temperature,
+        const response = await axios.post(
+          AI_CONFIG.cohere.baseUrl,
+          {
+            model: AI_CONFIG.cohere.model,
+            messages: cleanedMessages,
+            stream: true // Enable streaming
+          },
+          {
+            headers: {
+              'Authorization': AI_CONFIG.cohere.apiKey,
+              'Content-Type': 'application/json',
+            },
+            responseType: 'stream'
+          }
+        );
+
+        let fullResponse = '';
+        
+        return new Promise((resolve, reject) => {
+          response.data.on('data', (chunk) => {
+            try {
+              const lines = chunk.toString().split('\n').filter(line => line.trim() !== '');
+              for (const line of lines) {
+                console.log('Raw line from stream:', line); // Keep for debugging
+                
+                if (line.startsWith('data: ')) {
+                  const jsonString = line.slice(6);
+                  const data = JSON.parse(jsonString); 
+                  console.log('Parsed Cohere stream data:', data); // Keep for debugging
+                  
+                  if (data.type === 'content-delta') {
+                    const text = data.delta?.message?.content?.text;
+                    if (text) {
+                      fullResponse += text;
+                      if (onStream) {
+                        onStream(text);
+                      }
+                    }
+                  } else if (data.type === 'message-end') {
+                    if (onStream) {
+                      onStream(''); 
+                    }
+                    resolve(fullResponse.trim());
+                    return; 
+                  }
+                } else if (line.startsWith('event: ')) {
+                  // Ignore event lines, as they don't contain the data payload
+                  console.log('Ignoring event line:', line);
+                } else {
+                  // Log any other unexpected lines
+                  console.warn('Unexpected non-JSON, non-event line:', line);
+                }
+              }
+            } catch (error) {
+              console.error('Error processing stream chunk:', error);
+              // It's possible some non-JSON data comes through, or partial JSON
+            }
+          });
+
+          response.data.on('end', () => {
+            resolve(fullResponse);
+          });
+
+          response.data.on('error', (error) => {
+            console.error('Stream error:', error);
+            reject(error);
+          });
         });
-
-        return response.choices[0].message.content;
-      } 
-      // else if (provider === 'local') {
-      //   // Build prompt from full chat history
-      //   const prompt = messages
-      //     .map(msg => `${msg.role === 'user' ? 'Human' : 'Assistant'}: ${msg.content}`)
-      //     .join('\n') + '\nAssistant:';
-        
-      //   console.log('=== Ollama Request Details ===');
-      //   console.log('URL:', `${AI_CONFIG.local.baseUrl}/api/generate`);
-      //   console.log('Model:', AI_CONFIG.local.model);
-      //   console.log('Prompt:', prompt);
-        
-      //   const requestBody = {
-      //     model: AI_CONFIG.local.model,
-      //     prompt: prompt,
-      //     temperature: AI_CONFIG.local.temperature,
-      //     context_size: AI_CONFIG.local.contextSize,
-      //     stream: true,  // Enable streaming
-      //     options: {
-      //       num_predict: -1,
-      //       stop: ["Human:", "Assistant:"]
-      //     }
-      //   };
-        
-      //   console.log('Request Body:', JSON.stringify(requestBody, null, 2));
-        
-      //   try {
-      //     console.log('Sending streaming request to Ollama...');
-      //     const response = await axios.post(`${AI_CONFIG.local.baseUrl}/api/generate`, requestBody, {
-      //       responseType: 'stream'
-      //     });
-
-      //     let fullResponse = '';
-          
-      //     return new Promise((resolve, reject) => {
-      //       response.data.on('data', (chunk) => {
-      //         try {
-      //           const lines = chunk.toString().split('\n').filter(line => line.trim() !== '');
-      //           for (const line of lines) {
-      //             const data = JSON.parse(line);
-      //             if (data.response) {
-      //               fullResponse += data.response;
-      //               if (onStream) {
-      //                 onStream(data.response);
-      //               }
-      //             }
-      //             if (data.done) {
-      //               resolve(fullResponse.trim());
-      //             }
-      //           }
-      //         } catch (error) {
-      //           console.error('Error processing stream chunk:', error);
-      //         }
-      //       });
-
-      //       response.data.on('error', (error) => {
-      //         console.error('Stream error:', error);
-      //         reject(error);
-      //       });
-
-      //       response.data.on('end', () => {
-      //         if (!fullResponse) {
-      //           reject(new Error('No response received from Ollama'));
-      //         }
-      //       });
-      //     });
-      //   } catch (error) {
-      //     console.error('=== Ollama API Error Details ===');
-      //     console.error('Error Message:', error.message);
-      //     console.error('Error Response:', error.response?.data);
-      //     console.error('Error Status:', error.response?.status);
-      //     console.error('Request Config:', {
-      //       url: error.config?.url,
-      //       method: error.config?.method,
-      //       headers: error.config?.headers,
-      //       data: error.config?.data
-      //     });
-      //     throw error;
-      //   }
-      // } 
-      else {
+      } else {
         throw new Error(`Unsupported provider: ${provider}`);
       }
     } catch (error) {

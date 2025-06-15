@@ -9,7 +9,7 @@ const serverDir = join(__dirname, '..');
 
 export const AI_CONFIG = {
   // Default AI provider (can be 'local' or 'openai')
-  defaultProvider: 'openai',
+  defaultProvider: 'cohere',
   
   // // Local AI settings (Ollama)
   // local: {
@@ -20,11 +20,11 @@ export const AI_CONFIG = {
   // },
   
   // OpenAI settings
-  openai: {
-    baseUrl: 'https://api.groq.com/openai/v1/chat/completions',
+  cohere: {
+    baseUrl: 'https://api.cohere.com/v2/chat',
     enabled: true,
-    apiKey: '	Bearer REMOVED', // Replace this with your actual OpenAI API key
-    model: 'meta-llama/llama-4-scout-17b-16e-instruct',
+    apiKey: 'Bearer SI5IpGRsTJtMREJyQpfhlvM4ceY0bDvyxuRt28Nc', // Replace this with your actual OpenAI API key
+    model: 'command-a-03-2025',
     temperature: 0.7,
   }
 

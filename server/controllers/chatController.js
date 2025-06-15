@@ -9,7 +9,7 @@ export const createChat = async (req, res) => {
     const chat = new Chat({
       title: title || 'New Chat',
       messages: [],
-      provider: provider || 'openai' // Store the AI provider preference
+      provider: provider || 'cohere' // Store the AI provider preference
     });
     await chat.save();
     res.status(201).json(chat);
@@ -76,20 +76,25 @@ export const addMessage = async (req, res) => {
         }
       );
       
-      // Add AI response to chat history
-      chat.messages.push({ role: 'assistant', content: fullResponse });
-      await chat.save();
+      // Add AI response to chat history only if we got a response
+      if (fullResponse) {
+        chat.messages.push({ role: 'assistant', content: fullResponse });
+        await chat.save();
+      }
       
       // Send end of stream
       res.write(`data: ${JSON.stringify({ done: true })}\n\n`);
       res.end();
     } catch (error) {
       console.error('Error generating AI response:', error);
-      chat.messages.push({ 
-        role: 'assistant', 
-        content: 'Sorry, I encountered an error while processing your request.' 
-      });
-      await chat.save();
+      // Only add error message if we haven't sent any response yet
+      if (!fullResponse) {
+        chat.messages.push({ 
+          role: 'assistant', 
+          content: 'Sorry, I encountered an error while processing your request.' 
+        });
+        await chat.save();
+      }
       res.write(`data: ${JSON.stringify({ error: 'Error generating response' })}\n\n`);
       res.end();
     }
