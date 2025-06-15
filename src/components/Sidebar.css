@@ -155,7 +155,7 @@
   padding: 10px 15px;
   border-radius: 10px;
   margin-bottom: 6px;
-  color: var(--color-text-secondary);
+  color: var(--color-text) !important;
   font-weight: 500;
   text-decoration: none !important;
   white-space: nowrap;
@@ -180,7 +180,7 @@
   flex-shrink: 0;
   width: 18px !important;
   height: 18px !important;
-  color: var(--color-text-secondary);
+  color: var(--color-text) !important;
   transition: color 0.2s var(--ease-out-quad);
 }
 

@@ -38,6 +38,7 @@
   --color-dark-primary-rgb: 250, 235, 255;
   --color-dark-accent-rgb: 250, 235, 255; /* RGB for the new accent color */
   --color-active-link-text: var(--color-dark-text); /* Corrected: Should be light text on dark background */
+  --color-active-link-background: var(--color-dark-bg-secondary); /* New variable for active link background in dark mode */
 }
 
 /* Apply theme variables */
@@ -73,6 +74,7 @@
   --color-input-border: var(--color-dark-input-border);
   --color-shadow: var(--color-dark-shadow);
   --color-active-link-text: var(--color-dark-text); /* Ensure consistency for dark theme */
+  --color-active-link-background: var(--color-dark-bg-secondary); /* New variable for active link background in dark mode */
 }
 
 html, body {
