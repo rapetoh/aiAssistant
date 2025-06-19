@@ -1,0 +1,119 @@
+.auth-form {
+  background-color: var(--color-bg-alt);
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px var(--color-shadow);
+  max-width: 400px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  transition: all 0.3s var(--ease-out-quad);
+}
+
+.auth-page-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 80px); /* Adjust to main layout height */
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.auth-form-title {
+  font-size: 2em;
+  font-weight: 700;
+  color: var(--color-text);
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.auth-form-error {
+  color: var(--color-danger);
+  text-align: center;
+  font-weight: 500;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-size: 0.95em;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 12px 15px;
+  border-radius: 8px;
+  border: 1px solid var(--color-input-border);
+  background-color: var(--color-input-bg);
+  color: var(--color-text);
+  font-size: 1em;
+  transition: all 0.2s var(--ease-out-quad);
+}
+
+.form-group input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(var(--color-primary-rgb), 0.2);
+}
+
+.auth-submit-button {
+  background-color: var(--color-primary);
+  color: var(--color-light-bg-secondary);
+  padding: 15px 25px;
+  border-radius: 10px;
+  font-size: 1.1em;
+  font-weight: 600;
+  transition: all 0.2s var(--ease-out-quad);
+  box-shadow: 0 4px 15px rgba(var(--color-primary-rgb), 0.2);
+}
+
+.auth-submit-button:hover:not(:disabled) {
+  background-color: var(--color-primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(var(--color-primary-rgb), 0.3);
+}
+
+.auth-submit-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.auth-form-link {
+  text-align: center;
+  font-size: 0.95em;
+  color: var(--color-text-secondary);
+}
+
+.auth-form-link a {
+  color: var(--color-primary);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s var(--ease-out-quad);
+}
+
+.auth-form-link a:hover {
+  color: var(--color-primary-hover);
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .auth-form {
+    padding: 30px 20px;
+    gap: 15px;
+  }
+
+  .auth-form-title {
+    font-size: 1.8em;
+  }
+
+  .auth-submit-button {
+    padding: 12px 20px;
+    font-size: 1em;
+  }
+} 

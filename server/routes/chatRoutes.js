@@ -7,8 +7,12 @@ import {
   updateContext,
   deleteChat
 } from '../controllers/chatController.js';
+import { authenticate } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
+
+// Protect all chat routes
+router.use(authenticate);
 
 // Create a new chat
 router.post('/', createChat);

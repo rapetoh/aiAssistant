@@ -5,6 +5,7 @@ import mongoose from 'mongoose';
 import documentRoutes from './routes/documentRoutes.js';
 import uploadRoutes from './routes/uploadRoutes.js';
 import chatRoutes from './routes/chatRoutes.js';
+import authRoutes from './routes/authRoutes.js';
 // Load environment variables
 dotenv.config();
 
@@ -18,6 +19,7 @@ app.use(express.json());
 app.use('/api/documents', documentRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/chat', chatRoutes);
+app.use('/api/auth', authRoutes);
 
 // Basic route for testing
 app.get('/api/health', (req, res) => {

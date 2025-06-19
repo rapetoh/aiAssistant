@@ -219,6 +219,140 @@
   color: var(--color-danger);
 }
 
+.sidebar-auth {
+  margin-top: auto;
+  padding-top: 20px;
+}
+
+.auth-divider {
+  height: 1px;
+  background-color: var(--color-border);
+  margin: 15px 0;
+  opacity: 0.5;
+}
+
+.sidebar-auth .nav-link {
+  margin-bottom: 8px;
+}
+
+.sidebar-auth .logout-button {
+  width: 100%;
+  justify-content: flex-start;
+  text-align: left;
+  background: none;
+  border: none;
+  color: var(--color-text-secondary);
+  padding: 12px 18px;
+  border-radius: 10px;
+  font-weight: 500;
+  font-size: 1.05em;
+  transition: all 0.2s var(--ease-out-quad);
+}
+
+.sidebar-auth .logout-button:hover {
+  background-color: var(--color-input-bg);
+  color: var(--color-text);
+}
+
+/* Mobile Menu Styles */
+.mobile-menu-button {
+  display: none;
+  background: var(--color-primary);
+  border: none;
+  color: var(--color-light-bg-secondary);
+  padding: 8px;
+  cursor: pointer;
+  transition: color 0.2s var(--ease-out-quad);
+  z-index: 300;
+  position: relative;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+}
+
+.mobile-menu-button:hover {
+  color: var(--color-primary);
+  background: var(--color-primary-hover);
+}
+
+.mobile-menu-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 201;
+  opacity: 0;
+  transition: opacity 0.3s var(--ease-out-quad);
+}
+
+.mobile-menu-overlay.active {
+  opacity: 1;
+}
+
+.mobile-menu {
+  display: none;
+  position: fixed;
+  top: 0;
+  right: -300px;
+  width: 300px;
+  height: 100vh;
+  background-color: var(--color-bg-alt);
+  z-index: 202;
+  padding: 20px;
+  box-shadow: -2px 0 10px var(--color-shadow);
+  transition: right 0.3s var(--ease-out-quad);
+  overflow-y: auto;
+}
+
+.mobile-menu.active {
+  right: 0;
+}
+
+.mobile-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 25px;
+}
+
+.mobile-chat-section {
+  margin-bottom: 25px;
+}
+
+.mobile-new-chat-button {
+  width: 100%;
+  background-color: var(--color-primary);
+  color: var(--color-light-bg-secondary);
+  padding: 12px 18px;
+  border-radius: 10px;
+  font-size: 1em;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+  box-shadow: 0 4px 15px rgba(var(--color-primary-rgb), 0.2);
+}
+
+.mobile-new-chat-button:hover {
+  background-color: var(--color-primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(var(--color-primary-rgb), 0.3);
+}
+
+.mobile-chat-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mobile-auth {
+  margin-top: auto;
+  padding-top: 20px;
+}
+
 @media (max-width: 768px) {
   .sidebar {
     width: 100%;
@@ -242,7 +376,8 @@
 
   .sidebar-nav,
   .new-chat-form,
-  .chat-list {
+  .chat-list,
+  .sidebar-auth {
     display: none;
   }
 
@@ -254,5 +389,69 @@
     padding: 10px 15px;
     font-size: 0.9em;
     gap: 6px;
+  }
+
+  .sidebar-header-actions {
+    gap: 8px;
+  }
+
+  .theme-toggle-button {
+    padding: 8px;
+    font-size: 1em;
+  }
+
+  .sidebar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background-color: var(--color-bg-alt);
+    box-shadow: 0 2px 10px var(--color-shadow);
+  }
+
+  /* Show mobile menu elements */
+  .mobile-menu-button {
+    display: block;
+  }
+
+  .mobile-menu-overlay {
+    display: block;
+  }
+
+  .mobile-menu {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Mobile menu specific styles */
+  .mobile-menu .nav-link {
+    padding: 15px;
+    font-size: 1.1em;
+  }
+
+  .mobile-menu .chat-item {
+    padding: 12px 15px;
+  }
+
+  .mobile-menu .delete-chat {
+    opacity: 1;
+    padding: 8px;
+  }
+
+  .mobile-menu .auth-divider {
+    margin: 20px 0;
+  }
+
+  .mobile-menu .logout-button {
+    padding: 15px;
+    font-size: 1.1em;
+  }
+
+  /* Hide the header when mobile menu is open */
+  .mobile-menu.active ~ .sidebar-header,
+  .mobile-menu.active ~ .sidebar .sidebar-header {
+    display: none !important;
+  }
+  .mobile-menu.active ~ .sidebar {
+    box-shadow: none;
   }
 } 

@@ -20,25 +20,25 @@
   --color-light-primary-rgb: 51, 61, 121;
   --color-active-link-text: var(--color-light-text); /* Corrected: Should be dark text on light background */
 
-  /* Dark Theme Colors */
-  --color-dark-bg: #333D79; /* Dark blue for main background */
-  --color-dark-bg-secondary: #444C8D; /* Slightly lighter dark blue for secondary backgrounds */
-  --color-dark-text: #FAEBFF; /* Light color for main text */
-  --color-dark-text-secondary: var(--color-dark-text); /* Ensure good contrast for secondary text in dark mode */
-  --color-dark-border: #555E9E; /* Slightly lighter dark blue for border */
-  --color-dark-primary: #FAEBFF; /* Light color as primary accent */
-  --color-dark-primary-hover: rgba(250, 235, 255, 0.8); /* Slightly transparent light color for hover */
-  --color-dark-accent: rgba(250, 235, 255, 0.7); /* Adjusted for better gradient visibility in dark mode */
-  --color-dark-success: #88c0d0; /* Keep default blue-green */
-  --color-dark-danger: #bf616a; /* Keep default red */
-  --color-dark-input-bg: #2A3366; /* Darker blue for input background */
-  --color-dark-input-border: #6672B1; /* Lighter dark blue for input border */
-  --color-dark-shadow: rgba(250, 235, 255, 0.15); /* Shadow based on light color */
-  --color-dark-bg-rgb: 51, 61, 121;
-  --color-dark-primary-rgb: 250, 235, 255;
-  --color-dark-accent-rgb: 250, 235, 255; /* RGB for the new accent color */
-  --color-active-link-text: var(--color-dark-text); /* Corrected: Should be light text on dark background */
-  --color-active-link-background: var(--color-dark-bg-secondary); /* New variable for active link background in dark mode */
+  /* Dark Theme Colors - ChatGPT Style */
+  --color-dark-bg: #343541; /* ChatGPT's main dark background */
+  --color-dark-bg-secondary: #444654; /* ChatGPT's slightly lighter background for messages */
+  --color-dark-text: #ECECF1; /* ChatGPT's light text color */
+  --color-dark-text-secondary: #9FA6B1; /* ChatGPT's secondary text color */
+  --color-dark-border: #4E4F60; /* ChatGPT's border color */
+  --color-dark-primary: #10A37F; /* ChatGPT's green accent color */
+  --color-dark-primary-hover: #0D8C6D; /* Slightly darker green for hover */
+  --color-dark-accent: #10A37F; /* ChatGPT's accent color */
+  --color-dark-success: #10A37F; /* ChatGPT's success color */
+  --color-dark-danger: #EF4146; /* ChatGPT's error color */
+  --color-dark-input-bg: #40414F; /* ChatGPT's input background */
+  --color-dark-input-border: #565869; /* ChatGPT's input border */
+  --color-dark-shadow: rgba(0, 0, 0, 0.2); /* ChatGPT's shadow color */
+  --color-dark-bg-rgb: 52, 53, 65;
+  --color-dark-primary-rgb: 16, 163, 127;
+  --color-dark-accent-rgb: 16, 163, 127;
+  --color-active-link-text: var(--color-dark-text);
+  --color-active-link-background: var(--color-dark-bg-secondary);
 }
 
 /* Apply theme variables */
@@ -56,7 +56,7 @@
   --color-input-bg: var(--color-light-input-bg);
   --color-input-border: var(--color-light-input-border);
   --color-shadow: var(--color-light-shadow);
-  --color-active-link-text: var(--color-light-text); /* Ensure consistency for light theme */
+  --color-active-link-text: var(--color-light-text);
 }
 
 [data-theme="dark"] {
@@ -73,8 +73,8 @@
   --color-input-bg: var(--color-dark-input-bg);
   --color-input-border: var(--color-dark-input-border);
   --color-shadow: var(--color-dark-shadow);
-  --color-active-link-text: var(--color-dark-text); /* Ensure consistency for dark theme */
-  --color-active-link-background: var(--color-dark-bg-secondary); /* New variable for active link background in dark mode */
+  --color-active-link-text: var(--color-dark-text);
+  --color-active-link-background: var(--color-dark-bg-secondary);
 }
 
 html, body {
