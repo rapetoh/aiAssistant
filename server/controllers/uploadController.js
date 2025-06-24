@@ -59,6 +59,7 @@ export const handleFileUpload = (req, res, next) => {
 
 // Controller function to process the uploaded file
 export const uploadFile = async (req, res) => {
+  let filePath = ''; // Define filePath in the broader scope
   try {
     if (!req.file) {
       return res.status(400).json({ message: 'No file uploaded' });
@@ -66,20 +67,19 @@ export const uploadFile = async (req, res) => {
 
     const file = req.file;
     let content = '';
-    let filePath = '';
+
+    // Save file to disk first, regardless of type
+    const timestamp = Date.now();
+    const fileName = `${timestamp}-${file.originalname}`;
+    filePath = path.join(uploadsDir, fileName);
+    fs.writeFileSync(filePath, file.buffer);
 
     // Extract text from PDF
     if (file.mimetype === 'application/pdf') {
       try {
-        // Get PDF metadata using pdf-lib
-        const pdfDoc = await PDFDocument.load(file.buffer);
+        // Get PDF metadata using pdf-lib, ignoring encryption
+        const pdfDoc = await PDFDocument.load(file.buffer, { ignoreEncryption: true });
         const pageCount = pdfDoc.getPageCount();
-
-        // Save file to disk first
-        const timestamp = Date.now();
-        const fileName = `${timestamp}-${file.originalname}`;
-        filePath = path.join(uploadsDir, fileName);
-        fs.writeFileSync(filePath, file.buffer);
 
         // Extract text content using pdf.js-extract
         const pdfExtract = new PDFExtract();
@@ -106,8 +106,7 @@ export const uploadFile = async (req, res) => {
     } else if (file.mimetype === 'text/plain') {
       content = file.buffer.toString('utf-8');
     } else {
-      // Clean up the file if it's not supported
-      fs.unlinkSync(filePath);
+      // This case should ideally not be hit due to fileFilter, but as a safeguard:
       return res.status(400).json({ message: 'Unsupported file type' });
     }
 
@@ -117,9 +116,10 @@ export const uploadFile = async (req, res) => {
       content: content,
       type: file.mimetype === 'application/pdf' ? 'pdf' : 'txt',
       filePath: filePath,
+      user: req.user.id,
       metadata: {
         size: file.size,
-        pages: file.mimetype === 'application/pdf' ? (await PDFDocument.load(file.buffer)).getPageCount() : 1,
+        pages: file.mimetype === 'application/pdf' ? (await PDFDocument.load(file.buffer, { ignoreEncryption: true })).getPageCount() : 1,
         author: 'Unknown'
       }
     });

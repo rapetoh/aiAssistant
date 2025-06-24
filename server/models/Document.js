@@ -31,6 +31,11 @@ const documentSchema = new mongoose.Schema({
     size: Number,
     pages: Number,
     author: String
+  },
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
   }
 });
 

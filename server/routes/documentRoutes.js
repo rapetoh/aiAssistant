@@ -6,23 +6,34 @@ import {
   updateDocument,
   deleteDocument
 } from '../controllers/documentController.js';
-import { uploadFile } from '../controllers/uploadController.js';
+import { uploadFile, handleFileUpload } from '../controllers/uploadController.js';
+import { authenticate } from '../middleware/authMiddleware.js';
 import Document from '../models/Document.js';
 import fs from 'fs';
 
 const router = express.Router();
 
-// Document routes
+// Protect all document routes
+router.use(authenticate);
+
+// GET all documents for the logged-in user
 router.get('/', getDocuments);
+
+// GET a single document by ID
 router.get('/:id', getDocument);
 
+// POST to create a new document (e.g., from text input)
 router.post('/', createDocument);
 
+// PUT to update a document by ID
 router.put('/:id', updateDocument);
+
+// DELETE a document by ID
 router.delete('/:id', deleteDocument);
 
-// Upload a document
-router.post('/upload', uploadFile);
+// POST to upload a file and create a document
+// The 'handleFileUpload' middleware processes the file first
+router.post('/upload', handleFileUpload, uploadFile);
 
 // Get all documents
 router.get('/', async (req, res) => {

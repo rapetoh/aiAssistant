@@ -9,4 +9,19 @@ const api = axios.create({
   },
 });
 
+// This interceptor runs before every request
+api.interceptors.request.use(
+  (config) => {
+    // The token is stored directly under the 'authToken' key
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
 export default api; 
