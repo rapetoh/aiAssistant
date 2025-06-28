@@ -3,6 +3,18 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import './Sidebar.css';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
+import { Tooltip } from '@chakra-ui/react';
+
+// Media query hook for desktop detection
+function useIsDesktop() {
+  const [isDesktop, setIsDesktop] = React.useState(() => window.innerWidth >= 769);
+  React.useEffect(() => {
+    const handler = () => setIsDesktop(window.innerWidth >= 769);
+    window.addEventListener('resize', handler);
+    return () => window.removeEventListener('resize', handler);
+  }, []);
+  return isDesktop;
+}
 
 // Icons (using simple SVGs for now, can be replaced with an icon library later)
 const SunIcon = () => (<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>);
@@ -31,6 +43,8 @@ const Sidebar = ({
   const { theme, toggleTheme } = useTheme();
   const { user, logout } = useAuth(); // Use auth context
   const navigate = useNavigate();
+  const isDesktop = useIsDesktop();
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   const handleCreateChat = async (e) => {
     e.preventDefault();
@@ -68,53 +82,124 @@ const Sidebar = ({
     setIsMobileMenuOpen(false); // Close mobile menu when a nav item is clicked
   };
 
+  // Chevron icon for collapse/expand
+  const ChevronIcon = ({ collapsed }) => (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ transform: collapsed ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}><polyline points="15 18 9 12 15 6"></polyline></svg>
+  );
+
+  // Only allow collapse/collapsed sidebar on desktop
+  const canCollapse = isDesktop;
+  const showCollapsed = canCollapse && isSidebarCollapsed;
+
   return (
     <>
-      <div className="sidebar">
+      <div className={`sidebar${showCollapsed ? ' collapsed' : ''}`}>
         <div className="sidebar-header">
-          <h2>Roch</h2>
-          <div className="sidebar-header-actions">
-            <button
-              className="theme-toggle-button"
-              onClick={toggleTheme}
-              title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-            >
-              {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
-            </button>
-            {user && (
-              <button
-                className="new-chat-button"
-                onClick={() => setIsCreatingChat(true)}
-              >
-                <ChatIcon /> New Chat
-              </button>
-            )}
-            <button
-              className="mobile-menu-button"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              aria-label="Toggle menu"
-            >
-              {isMobileMenuOpen ? <CloseIcon /> : <MenuIcon />}
-            </button>
-          </div>
+          {/* Username at the very top, its own row */}
+          {!showCollapsed && (
+            <div className="sidebar-username">
+              {user && user.username ? user.username : 'Roch'}
+            </div>
+          )}
+          {/* Action buttons row */}
+          {showCollapsed ? (
+            <>
+              <div className="sidebar-collapsed-buttons">
+                <button
+                  className="sidebar-collapse-btn"
+                  onClick={() => setIsSidebarCollapsed(v => !v)}
+                  title={isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+                  style={{ marginBottom: 12 }}
+                >
+                  <ChevronIcon collapsed={isSidebarCollapsed} />
+                </button>
+                <button
+                  className="theme-toggle-button"
+                  onClick={toggleTheme}
+                  title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+                >
+                  {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
+                </button>
+              </div>
+              <div className="sidebar-collapsed-nav">
+                <Tooltip label="Home" placement="right" hasArrow><NavLink to="/" className={({ isActive }) => isActive ? 'collapsed-nav-link active' : 'collapsed-nav-link'} end><HomeIcon /></NavLink></Tooltip>
+                <Tooltip label="Documents" placement="right" hasArrow><NavLink to="/documents" className={({ isActive }) => isActive ? 'collapsed-nav-link active' : 'collapsed-nav-link'}><DocumentIcon /></NavLink></Tooltip>
+                <Tooltip label="Matcher" placement="right" hasArrow><NavLink to="/matcher" className={({ isActive }) => isActive ? 'collapsed-nav-link active' : 'collapsed-nav-link'}><MatcherIcon /></NavLink></Tooltip>
+                <Tooltip label="Settings" placement="right" hasArrow><NavLink to="/settings" className={({ isActive }) => isActive ? 'collapsed-nav-link active' : 'collapsed-nav-link'}><SettingsIcon /></NavLink></Tooltip>
+              </div>
+              {user && (
+                <div className="sidebar-collapsed-logout">
+                  <Tooltip label="Logout" placement="right" hasArrow>
+                    <button
+                      className="collapsed-nav-link"
+                      onClick={handleLogout}
+                      style={{ marginTop: 'auto' }}
+                      title="Logout"
+                    >
+                      <LogOutIcon />
+                    </button>
+                  </Tooltip>
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="sidebar-header-row">
+              {canCollapse && (
+                <button
+                  className="sidebar-collapse-btn"
+                  onClick={() => setIsSidebarCollapsed(v => !v)}
+                  title={isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+                  style={{ marginRight: 10 }}
+                >
+                  <ChevronIcon collapsed={isSidebarCollapsed} />
+                </button>
+              )}
+              <div className="sidebar-header-actions" style={{ flex: 1 }}>
+                <button
+                  className="theme-toggle-button"
+                  onClick={toggleTheme}
+                  title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+                >
+                  {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
+                </button>
+                {user && !isSidebarCollapsed && (
+                  <button
+                    className="new-chat-button"
+                    onClick={() => setIsCreatingChat(true)}
+                  >
+                    <ChatIcon /> New Chat
+                  </button>
+                )}
+                <button
+                  className="mobile-menu-button"
+                  onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                  aria-label="Toggle menu"
+                >
+                  {isMobileMenuOpen ? <CloseIcon /> : <MenuIcon />}
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
-        <nav className="sidebar-nav">
-          <NavLink to="/" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'} end onClick={handleNavClick}>
-            <HomeIcon /> Home
-          </NavLink>
-          <NavLink to="/documents" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'} onClick={handleNavClick}>
-            <DocumentIcon /> Documents
-          </NavLink>
-          <NavLink to="/matcher" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'} onClick={handleNavClick}>
-            <MatcherIcon /> Matcher
-          </NavLink>
-          <NavLink to="/settings" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'} onClick={handleNavClick}>
-            <SettingsIcon /> Settings
-          </NavLink>
-        </nav>
+        {!showCollapsed && (
+          <nav className="sidebar-nav">
+            <NavLink to="/" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'} end onClick={handleNavClick}>
+              <HomeIcon /> Home
+            </NavLink>
+            <NavLink to="/documents" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'} onClick={handleNavClick}>
+              <DocumentIcon /> Documents
+            </NavLink>
+            <NavLink to="/matcher" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'} onClick={handleNavClick}>
+              <MatcherIcon /> Matcher
+            </NavLink>
+            <NavLink to="/settings" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'} onClick={handleNavClick}>
+              <SettingsIcon /> Settings
+            </NavLink>
+          </nav>
+        )}
 
-        {isCreatingChat && (
+        {!showCollapsed && isCreatingChat && (
           <form onSubmit={handleCreateChat} className="new-chat-form">
             <input
               type="text"
@@ -132,7 +217,7 @@ const Sidebar = ({
           </form>
         )}
 
-        {user && (
+        {!showCollapsed && user && (
           <div className="chat-list">
             {chats.map(chat => (
               <NavLink
@@ -151,7 +236,9 @@ const Sidebar = ({
                   onClick={(e) => {
                     e.preventDefault(); // Prevent navigating when deleting
                     e.stopPropagation(); // Stop event from bubbling to NavLink
-                    onChatDelete && onChatDelete(chat._id);
+                    if (window.confirm('Are you sure you want to delete this chat? This action cannot be undone.')) {
+                      onChatDelete && onChatDelete(chat._id);
+                    }
                   }}
                 >
                   ×
@@ -161,23 +248,25 @@ const Sidebar = ({
           </div>
         )}
 
-        <div className="sidebar-auth">
-          {!user ? (
-            <>
-              <div className="auth-divider"></div>
-              <NavLink to="/login" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'} onClick={handleNavClick}>
-                <LogInIcon /> Login
-              </NavLink>
-              <NavLink to="/register" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'} onClick={handleNavClick}>
-                <SettingsIcon /> Register
-              </NavLink>
-            </>
-          ) : (
-            <button onClick={handleLogout} className="nav-link logout-button">
-              <LogOutIcon /> Logout {user.username && `(${user.username})`}
-            </button>
-          )}
-        </div>
+        {!showCollapsed && (
+          <div className="sidebar-auth">
+            {!user ? (
+              <>
+                <div className="auth-divider"></div>
+                <NavLink to="/login" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'} onClick={handleNavClick}>
+                  <LogInIcon /> Login
+                </NavLink>
+                <NavLink to="/register" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'} onClick={handleNavClick}>
+                  <SettingsIcon /> Register
+                </NavLink>
+              </>
+            ) : (
+              <button onClick={handleLogout} className="nav-link logout-button">
+                <LogOutIcon /> Logout {user.username && `(${user.username})`}
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Mobile Menu Overlay */}
@@ -228,7 +317,9 @@ const Sidebar = ({
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
-                        onChatDelete(chat._id);
+                        if (window.confirm('Are you sure you want to delete this chat? This action cannot be undone.')) {
+                          onChatDelete(chat._id);
+                        }
                       }}
                     >
                       ×

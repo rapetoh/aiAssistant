@@ -14,11 +14,28 @@
 
 .sidebar-header {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
   margin-bottom: 35px;
   padding-bottom: 18px;
   border-bottom: 1px solid var(--color-border);
+}
+
+.sidebar-username {
+  margin-bottom: 12px;
+  margin-left: 4px;
+  font-weight: 700;
+  font-size: 1.08em;
+  color: var(--color-text);
+  text-align: left;
+  width: 100%;
+  display: block;
+}
+
+.sidebar-header-row {
+  display: flex;
+  align-items: center;
+  width: 100%;
 }
 
 .sidebar-header h2 {
@@ -51,7 +68,7 @@
   background-color: var(--color-primary);
   color: var(--color-light-bg-secondary);
   padding: 12px 18px;
-  border-radius: 10px;
+  border-radius: 24px;
   font-size: 1em;
   font-weight: 600;
   gap: 10px;
@@ -113,7 +130,7 @@
   width: 100%;
   padding: 12px;
   margin-bottom: 12px;
-  border-radius: 8px;
+  border-radius: 12px;
   border: 1px solid var(--color-input-border);
   background-color: var(--color-bg-secondary);
   color: var(--color-text);
@@ -127,7 +144,7 @@
 .new-chat-buttons button {
   flex: 1;
   padding: 10px;
-  border-radius: 8px;
+  border-radius: 24px;
   font-weight: 600;
   font-size: 0.95em;
 }
@@ -135,11 +152,13 @@
 .new-chat-buttons button[type="submit"] {
   background-color: var(--color-success);
   color: var(--color-light-bg-secondary);
+  border-radius: 24px;
 }
 
 .new-chat-buttons button[type="button"] {
   background-color: var(--color-text-secondary);
   color: var(--color-light-bg-secondary);
+  border-radius: 24px;
 }
 
 .chat-list {
@@ -199,6 +218,17 @@
   padding-top: 2px;
 }
 
+.chat-item {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 5px;
+  cursor: pointer;
+  position: relative;
+  padding-right: 36px;
+}
+
 .delete-chat {
   background: none;
   border: none;
@@ -212,6 +242,7 @@
   right: 6px;
   top: 50%;
   transform: translateY(-50%);
+  z-index: 1;
 }
 
 .chat-item:hover .delete-chat {
@@ -285,10 +316,12 @@
   z-index: 201;
   opacity: 0;
   transition: opacity 0.3s var(--ease-out-quad);
+  pointer-events: none;
 }
 
 .mobile-menu-overlay.active {
   opacity: 1;
+  pointer-events: auto;
 }
 
 .mobile-menu {
@@ -326,7 +359,7 @@
   background-color: var(--color-primary);
   color: var(--color-light-bg-secondary);
   padding: 12px 18px;
-  border-radius: 10px;
+  border-radius: 24px;
   font-size: 1em;
   font-weight: 600;
   display: flex;
@@ -453,5 +486,91 @@
   }
   .mobile-menu.active ~ .sidebar {
     box-shadow: none;
+  }
+}
+
+@media (min-width: 769px) {
+  .sidebar.collapsed {
+    width: 64px;
+    min-width: 64px;
+    padding: 18px 8px;
+    transition: width 0.3s var(--ease-out-quad), padding 0.3s var(--ease-out-quad);
+  }
+  .sidebar.collapsed .sidebar-header h2,
+  .sidebar.collapsed .sidebar-nav,
+  .sidebar.collapsed .new-chat-form,
+  .sidebar.collapsed .chat-list,
+  .sidebar.collapsed .sidebar-auth {
+    display: none !important;
+  }
+  .sidebar-collapse-btn {
+    background: var(--color-input-bg);
+    border: none;
+    border-radius: 8px;
+    padding: 6px;
+    margin-right: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+  }
+  .sidebar-collapse-btn:hover {
+    background: var(--color-primary);
+    color: var(--color-light-bg-secondary);
+  }
+  .sidebar.collapsed .sidebar-header {
+    justify-content: flex-start;
+  }
+  .sidebar.collapsed .sidebar-header-actions {
+    gap: 0;
+  }
+  .sidebar-collapsed-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin-top: 4px;
+  }
+  .sidebar-collapsed-buttons .sidebar-collapse-btn {
+    margin-bottom: 16px;
+  }
+  .sidebar-collapsed-buttons .theme-toggle-button {
+    margin-bottom: 0;
+  }
+  .sidebar-collapsed-nav {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 32px;
+    gap: 18px;
+  }
+  .collapsed-nav-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    color: var(--color-text-secondary);
+    background: none;
+    font-size: 1.4em;
+    transition: background 0.2s, color 0.2s;
+  }
+  .collapsed-nav-link:hover, .collapsed-nav-link.active {
+    background: var(--color-primary);
+    color: var(--color-light-bg-secondary);
+  }
+  .collapsed-nav-link svg {
+    width: 24px;
+    height: 24px;
+  }
+  .sidebar-collapsed-logout {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    padding-bottom: 18px;
   }
 } 

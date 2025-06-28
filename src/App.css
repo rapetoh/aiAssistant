@@ -76,23 +76,23 @@
 }
 
 .new-chat-button {
-  background-color: #007bff;
+  background-color: var(--color-primary);
   color: white;
   border: none;
   padding: 8px 16px;
-  border-radius: 4px;
+  border-radius: 24px;
   cursor: pointer;
   font-size: 14px;
 }
 
 .new-chat-button:hover {
-  background-color: #0056b3;
+  background-color: var(--color-primary-hover);
 }
 
 .new-chat-form {
   margin-bottom: 20px;
   padding: 15px;
-  background-color: #f8f9fa;
+  background-color: var(--color-card);
   border-radius: 8px;
 }
 
@@ -118,13 +118,21 @@
 }
 
 .new-chat-buttons button[type="submit"] {
-  background-color: #28a745;
+  background-color: var(--color-success);
   color: white;
 }
 
+.new-chat-buttons button[type="submit"]:hover {
+  background-color: var(--color-success-hover, #10A37F);
+}
+
 .new-chat-buttons button[type="button"] {
-  background-color: #6c757d;
+  background-color: var(--color-text-secondary);
   color: white;
+}
+
+.new-chat-buttons button[type="button"]:hover {
+  background-color: var(--color-primary-hover);
 }
 
 .chat-list {
@@ -249,5 +257,17 @@
   .sidebar-header {
     width: 100%;
     justify-content: space-between;
+  }
+}
+
+.matcher-grid-responsive {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+}
+
+@media (max-width: 768px) {
+  .matcher-grid-responsive {
+    grid-template-columns: 1fr;
   }
 }

@@ -92,38 +92,35 @@ class AIService {
   }
 
   async generateMatchAnalysis(resume, jobDescription) {
-    const prompt = `
-      Analyze the following resume and job description. Provide a detailed analysis in JSON format.
+    const prompt = `Analyze this resume and job description. Return ONLY a valid JSON object with this exact structure:
 
-      The JSON object must have the following structure:
-      {
-        "name": "<candidate's full name>",
-        "role": "<candidate's current or most recent job title>",
-        "matchScore": <a number between 0 and 100 representing the percentage match>,
-        "summary": "<a short, one-sentence summary of the candidate's suitability>",
-        "recommendations": [
-          "<a string with a specific, actionable recommendation to improve the resume>",
-          "<another string with a specific, actionable recommendation>",
-          "...and so on"
-        ],
-        "jobKeywords": [
-          { "word": "<keyword>", "category": "<Hard Skill|Soft Skill|Core|Emphasis>" },
-          { "word": "<keyword>", "category": "<Hard Skill|Soft Skill|Core|Emphasis>" }
-        ]
-      }
+{
+  "name": "candidate name",
+  "role": "current job title", 
+  "matchScore": 85,
+  "summary": "brief suitability summary",
+  "missingSkills": ["skill1", "skill2"],
+  "improvementSuggestions": ["suggestion1", "suggestion2"],
+  "skills": [
+    {
+      "name": "skill name",
+      "type": "Hard Skill",
+      "status": true,
+      "highlight": false
+    }
+  ],
+  "recommendations": ["recommendation1", "recommendation2"],
+  "jobKeywords": [
+    {"word": "keyword", "category": "Hard Skill"}
+  ],
+  "whatMattersMost": "A concise summary of the top 1-3 requirements or priorities for this job (e.g., most critical skills, experience, or attributes)"
+}
 
-      Here is the resume:
-      ---
-      ${resume}
-      ---
+Resume: ${resume}
 
-      Here is the job description:
-      ---
-      ${jobDescription}
-      ---
+Job Description: ${jobDescription}
 
-      Now, provide the JSON object.
-    `;
+Return the JSON object:`;
 
     try {
       const response = await axios.post(

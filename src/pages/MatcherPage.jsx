@@ -13,7 +13,7 @@ import {
   Flex,
   Divider,
   Tooltip,
-  SimpleGrid,
+  Grid,
   GridItem,
   useColorModeValue,
   useColorMode,
@@ -129,277 +129,291 @@ const MatcherPage = () => {
     : '#E0E0E0';
 
   return (
-    <div style={{ minHeight: '100vh', width: '100%', backgroundColor: 'var(--color-bg)', overflow: 'auto', padding: '2rem' }}>
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-          gap: '2rem',
-          width: '100%',
-          maxWidth: '1600px',
-          margin: 'auto',
-          marginBottom: '4rem',
-          backgroundColor: 'var(--color-bg-alt)',
-          borderRadius: '1.5rem',
-          boxShadow: '0 4px 32px 0 rgba(31,38,135,0.10)',
-          padding: '2rem',
-        }}
+    <div style={{ minHeight: '100vh', width: '100%', backgroundColor: 'var(--color-bg)', overflowX: 'hidden', padding: '2rem' }}>
+      <Grid
+        templateColumns={{ base: '1fr', md: 'repeat(4, 1fr)' }}
+        templateRows={{ base: 'none', md: 'repeat(2, 1fr)' }}
+        gap={6}
+        width="100%"
+        maxW="1600px"
+        mx="auto"
+        mb="4rem"
+        bg="var(--color-bg-alt)"
+        borderRadius="1.5rem"
+        boxShadow="0 4px 32px 0 rgba(31,38,135,0.10)"
+        p="2rem"
       >
         {/* Upload Resume */}
-        <div style={{ width: '100%', height: '100%', backgroundColor: 'var(--color-card)', borderRadius: '1rem', boxShadow: '0 2px 12px 0 rgba(31, 38, 135, 0.10)', padding: '1.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', gap: '1rem' }}>
-          <h2 style={{ fontWeight: 'bold', marginBottom: '0.5rem', textAlign: 'left', width: '100%' }}>Upload Resume</h2>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', width: '100%' }}>
-            <Box
-              as="button"
-              p={0}
-              border="none"
-              bg="none"
-              onClick={() => fileInputRef.current.click()}
-              _hover={{ opacity: 0.8 }}
-              cursor="pointer"
-            >
-              <Center
-                borderWidth="2px"
-                borderRadius="md"
-                borderStyle="dashed"
-                borderColor={isDragging ? 'teal.400' : useColorModeValue('gray.300', 'gray.600')}
-                bg={isDragging ? 'teal.50' : 'var(--color-bg-alt)'}
-                w="44px"
-                h="44px"
-                onDrop={handleDrop}
-                onDragOver={handleDragOver}
-                onDragEnter={handleDragEnter}
-                onDragLeave={handleDragLeave}
+        <GridItem colSpan={{ base: 1, md: 1 }} rowSpan={1}>
+          <div style={{ width: '100%', maxWidth: '100%', boxSizing: 'border-box', height: '100%', backgroundColor: 'var(--color-card)', borderRadius: '1rem', boxShadow: '0 2px 12px 0 rgba(31, 38, 135, 0.10)', padding: '1.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', gap: '1rem', wordBreak: 'break-word', overflowWrap: 'anywhere' }}>
+            <h2 style={{ fontWeight: 'bold', marginBottom: '0.5rem', textAlign: 'left', width: '100%' }}>Upload Resume</h2>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', width: '100%' }}>
+              <Box
+                as="button"
+                p={0}
+                border="none"
+                bg="none"
+                onClick={() => fileInputRef.current.click()}
+                _hover={{ opacity: 0.8 }}
+                cursor="pointer"
               >
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  onChange={handleFileChange}
-                  style={{ display: 'none' }}
-                  accept=".pdf,.doc,.docx"
-                />
-                <Icon as={FiUploadCloud} boxSize={7} color="teal.400" />
-              </Center>
-            </Box>
-            <Text color={subTextColor} fontWeight="medium" fontSize="sm" textAlign="left">
-              {resumeFile ? `Selected: ${resumeFile.name}` : 'Click or drag & drop your resume'}
-            </Text>
+                <Center
+                  borderWidth="2px"
+                  borderRadius="md"
+                  borderStyle="dashed"
+                  borderColor={isDragging ? 'teal.400' : useColorModeValue('gray.300', 'gray.600')}
+                  bg={isDragging ? 'teal.50' : 'var(--color-bg-alt)'}
+                  w="44px"
+                  h="44px"
+                  onDrop={handleDrop}
+                  onDragOver={handleDragOver}
+                  onDragEnter={handleDragEnter}
+                  onDragLeave={handleDragLeave}
+                >
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                    style={{ display: 'none' }}
+                    accept=".pdf,.doc,.docx"
+                  />
+                  <Icon as={FiUploadCloud} boxSize={7} color="teal.400" />
+                </Center>
+              </Box>
+              <Text color={subTextColor} fontWeight="medium" fontSize="sm" textAlign="left">
+                {resumeFile ? `Selected: ${resumeFile.name}` : 'Click or drag & drop your resume'}
+              </Text>
+            </div>
           </div>
-        </div>
+        </GridItem>
 
         {/* Job Description */}
-        <div style={{ width: '100%', height: '100%', backgroundColor: 'var(--color-card)', borderRadius: '1rem', boxShadow: '0 2px 12px 0 rgba(31, 38, 135, 0.10)', padding: '1.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', gap: '1rem' }}>
-          <h3 style={{ fontWeight: 'bold', marginBottom: '0.5rem', textAlign: 'left', width: '100%' }}>Job Description</h3>
-          <Textarea
-            placeholder="Paste or write the job description here..."
-            value={jobDescription}
-            onChange={(e) => setJobDescription(e.target.value)}
-            height="70px"
-            bg="var(--color-bg-alt)"
-            borderColor={dividerColor}
-            fontSize="sm"
-            resize="none"
-            mb={2}
-            w="100%"
-            style={{ color: colorMode === 'dark' ? 'white' : textColor }}
-          />
-          <Button
-            colorScheme="teal"
-            size="md"
-            w="100%"
-            borderRadius="full"
-            fontWeight="bold"
-            onClick={handleMatch}
-            isLoading={isLoading}
-            disabled={!resumeFile || !jobDescription}
-            mt={1}
-          >
-            Analyze Match
-          </Button>
-          {error && (
-            <Text color={errorColor} mt={2} fontWeight="bold" fontSize="sm">{error}</Text>
-          )}
-        </div>
+        <GridItem colSpan={{ base: 1, md: 2 }} rowSpan={1}>
+          <div style={{ width: '100%', maxWidth: '100%', boxSizing: 'border-box', height: '100%', backgroundColor: 'var(--color-card)', borderRadius: '1rem', boxShadow: '0 2px 12px 0 rgba(31, 38, 135, 0.10)', padding: '1.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', gap: '1rem', wordBreak: 'break-word', overflowWrap: 'anywhere' }}>
+            <h3 style={{ fontWeight: 'bold', marginBottom: '0.5rem', textAlign: 'left', width: '100%' }}>Job Description</h3>
+            <Textarea
+              placeholder="Paste or write the job description here..."
+              value={jobDescription}
+              onChange={(e) => setJobDescription(e.target.value)}
+              height="70px"
+              bg="var(--color-bg-alt)"
+              borderColor={dividerColor}
+              fontSize="sm"
+              resize="none"
+              mb={2}
+              w="100%"
+              style={{ color: colorMode === 'dark' ? 'white' : textColor }}
+            />
+            <Button
+              colorScheme="teal"
+              size="md"
+              w="100%"
+              borderRadius="full"
+              fontWeight="bold"
+              onClick={handleMatch}
+              isLoading={isLoading}
+              disabled={!resumeFile || !jobDescription}
+              mt={1}
+            >
+              Analyze Match
+            </Button>
+            {error && (
+              <Text color={errorColor} mt={2} fontWeight="bold" fontSize="sm">{error}</Text>
+            )}
+          </div>
+        </GridItem>
 
         {/* Job Description Keywords */}
-        <div style={{ width: '100%', height: '100%', backgroundColor: 'var(--color-card)', borderRadius: '1rem', boxShadow: '0 2px 12px 0 rgba(31, 38, 135, 0.10)', padding: '1.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', gap: '1rem' }}>
-          <h4 style={{ fontWeight: 'bold', marginBottom: '0.5rem', textAlign: 'left', width: '100%' }}>Job Description Keywords</h4>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.5rem', width: '100%' }}>
-            {result?.jobKeywords && result.jobKeywords.length > 0 ? (
-              result.jobKeywords.map((kw, idx) => (
-                <Tag
-                  key={idx}
-                  colorScheme={TAG_COLOR_PALETTE[idx % TAG_COLOR_PALETTE.length]}
-                  borderRadius="full"
-                  px={3}
-                  fontWeight="bold"
-                  fontSize="sm"
-                  variant="solid"
-                >
-                  <TagLabel>{kw.word}</TagLabel>
-                </Tag>
-              ))
-            ) : (
-              <Text color={subTextColor}>No keywords extracted.</Text>
-            )}
+        <GridItem colSpan={{ base: 1, md: 1 }} rowSpan={1}>
+          <div style={{ width: '100%', maxWidth: '100%', boxSizing: 'border-box', height: '100%', backgroundColor: 'var(--color-card)', borderRadius: '1rem', boxShadow: '0 2px 12px 0 rgba(31, 38, 135, 0.10)', padding: '1.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', gap: '1rem', wordBreak: 'break-word', overflowWrap: 'anywhere' }}>
+            <h4 style={{ fontWeight: 'bold', marginBottom: '0.5rem', textAlign: 'left', width: '100%' }}>Job Description Keywords</h4>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.5rem', width: '100%' }}>
+              {result?.jobKeywords && result.jobKeywords.length > 0 ? (
+                result.jobKeywords.map((kw, idx) => (
+                  <Tag
+                    key={idx}
+                    colorScheme={TAG_COLOR_PALETTE[idx % TAG_COLOR_PALETTE.length]}
+                    borderRadius="full"
+                    px={3}
+                    fontWeight="bold"
+                    fontSize="sm"
+                    variant="solid"
+                  >
+                    <TagLabel>{kw.word}</TagLabel>
+                  </Tag>
+                ))
+              ) : (
+                <Text color={subTextColor}>No keywords extracted.</Text>
+              )}
+            </div>
           </div>
-        </div>
+        </GridItem>
 
         {/* Candidate Info & Match Score */}
-        <div style={{ width: '100%', height: '100%', backgroundColor: 'var(--color-card)', borderRadius: '1rem', boxShadow: '0 2px 12px 0 rgba(31, 38, 135, 0.10)', padding: '1.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', gap: '1rem' }}>
-          <h2 style={{ fontWeight: 'bold', marginBottom: '0.5rem', textAlign: 'left', width: '100%' }}>Candidate</h2>
-          <Text color={headingColor} fontWeight="bold" fontSize="md" mb={1} textAlign="left" w="100%">
-            {result?.name || 'Candidate Name'}
-          </Text>
-          <Text color={subTextColor} fontWeight="medium" fontSize="sm" mb={2} textAlign="left" w="100%">
-            {result?.role || 'Current Role'}
-          </Text>
-          <Divider my={1} w="100%" borderColor={dividerColor} />
-          <h3 style={{ fontWeight: 'bold', marginBottom: '0.5rem', textAlign: 'left', width: '100%' }}>Match Score</h3>
-          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '0.5rem', width: '100%' }}>
-            <div style={{ width: '60px', height: '60px', transition: 'all 0.3s' }}>
-              <CircularProgressbarWithChildren
-                value={result ? result.matchScore : 0}
-                maxValue={100}
-                strokeWidth={8}
-                styles={buildStyles({
-                  // Use a vibrant gradient or alternate color for the path
-                  pathColor: result
-                    ? `url(#matchGradient)`
-                    : useColorModeValue('#E0E0E0', '#222'),
-                  trailColor: useColorModeValue('#E0E0E0', '#222'),
-                  textColor: headingColor,
-                  backgroundColor: 'var(--color-bg-alt)',
-                  transition: 'stroke-dashoffset 0.5s ease',
-                })}
-              >
-                {/* SVG Gradient Defs for the progress bar */}
-                <svg style={{ height: 0 }}>
-                  <defs>
-                    <linearGradient id="matchGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                      <stop offset="0%" stopColor="#38B2AC" /> {/* teal.400 */}
-                      <stop offset="50%" stopColor="#805AD5" /> {/* purple.500 */}
-                      <stop offset="100%" stopColor="#F6AD55" /> {/* orange.300 */}
-                    </linearGradient>
-                  </defs>
-                </svg>
-                <Text fontSize="md" fontWeight="extrabold" color={matchColor} letterSpacing="tight">
-                  {result ? `${result.matchScore}%` : '--'}
-                </Text>
-              </CircularProgressbarWithChildren>
-            </div>
-          </div>
-          {result && (
-            <Text fontSize="sm" mb={1} color={subTextColor} textAlign="left" w="100%">
-              {result.summary}
+        <GridItem colSpan={{ base: 1, md: 1 }} rowSpan={2}>
+          <div style={{ width: '100%', maxWidth: '100%', boxSizing: 'border-box', height: '100%', backgroundColor: 'var(--color-card)', borderRadius: '1rem', boxShadow: '0 2px 12px 0 rgba(31, 38, 135, 0.10)', padding: '1.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', gap: '1rem', wordBreak: 'break-word', overflowWrap: 'anywhere', height: '100%' }}>
+            <h2 style={{ fontWeight: 'bold', marginBottom: '0.5rem', textAlign: 'left', width: '100%' }}>Candidate</h2>
+            <Text color={headingColor} fontWeight="bold" fontSize="md" mb={1} textAlign="left" w="100%">
+              {result?.name || 'Candidate Name'}
             </Text>
-          )}
-        </div>
+            <Text color={subTextColor} fontWeight="medium" fontSize="sm" mb={2} textAlign="left" w="100%">
+              {result?.role || 'Current Role'}
+            </Text>
+            <Divider my={1} w="100%" borderColor={dividerColor} />
+            <h3 style={{ fontWeight: 'bold', marginBottom: '0.5rem', textAlign: 'left', width: '100%' }}>Match Score</h3>
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '0.5rem', width: '100%' }}>
+              <div style={{ width: '60px', height: '60px', transition: 'all 0.3s' }}>
+                <CircularProgressbarWithChildren
+                  value={result ? result.matchScore : 0}
+                  maxValue={100}
+                  strokeWidth={8}
+                  styles={buildStyles({
+                    // Use a vibrant gradient or alternate color for the path
+                    pathColor: result
+                      ? `url(#matchGradient)`
+                      : useColorModeValue('#E0E0E0', '#222'),
+                    trailColor: useColorModeValue('#E0E0E0', '#222'),
+                    textColor: headingColor,
+                    backgroundColor: 'var(--color-bg-alt)',
+                    transition: 'stroke-dashoffset 0.5s ease',
+                  })}
+                >
+                  {/* SVG Gradient Defs for the progress bar */}
+                  <svg style={{ height: 0 }}>
+                    <defs>
+                      <linearGradient id="matchGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stopColor="#38B2AC" /> {/* teal.400 */}
+                        <stop offset="50%" stopColor="#805AD5" /> {/* purple.500 */}
+                        <stop offset="100%" stopColor="#F6AD55" /> {/* orange.300 */}
+                      </linearGradient>
+                    </defs>
+                  </svg>
+                  <Text fontSize="md" fontWeight="extrabold" color={matchColor} letterSpacing="tight">
+                    {result ? `${result.matchScore}%` : '--'}
+                  </Text>
+                </CircularProgressbarWithChildren>
+              </div>
+            </div>
+            {result && (
+              <Text fontSize="sm" mb={1} color={subTextColor} textAlign="left" w="100%">
+                {result.summary}
+              </Text>
+            )}
+          </div>
+        </GridItem>
 
         {/* Skills Table */}
-        <div style={{ width: '100%', height: '100%', backgroundColor: 'var(--color-card)', borderRadius: '1rem', boxShadow: '0 2px 12px 0 rgba(31, 38, 135, 0.10)', padding: '1.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', gap: '1rem' }}>
-          <h3 style={{ fontWeight: 'bold', marginBottom: '0.5rem', textAlign: 'left', width: '100%' }}>Hard Skills</h3>
-          <div style={{ borderRadius: 'lg', backgroundColor: tagBg, padding: '0.5rem', boxShadow: 'sm', width: '100%', height: '100%', overflow: 'hidden' }}>
-            <div style={{ display: 'flex', fontWeight: 'bold', color: subTextColor, marginBottom: '0.25rem', fontSize: 'sm', width: '100%' }}>
-              <div style={{ flex: 2, textAlign: 'left' }}>Skill</div>
-              <div style={{ flex: 1, textAlign: 'center' }}>Status</div>
-              <div style={{ flex: 1, textAlign: 'center' }}>Highlight</div>
+        <GridItem colSpan={{ base: 1, md: 1 }} rowSpan={1}>
+          <div style={{ width: '100%', maxWidth: '100%', boxSizing: 'border-box', height: '100%', backgroundColor: 'var(--color-card)', borderRadius: '1rem', boxShadow: '0 2px 12px 0 rgba(31, 38, 135, 0.10)', padding: '1.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', gap: '1rem', wordBreak: 'break-word', overflowWrap: 'anywhere' }}>
+            <h3 style={{ fontWeight: 'bold', marginBottom: '0.5rem', textAlign: 'left', width: '100%' }}>Hard Skills</h3>
+            <div style={{ borderRadius: 'lg', backgroundColor: tagBg, padding: '0.5rem', boxShadow: 'sm', width: '100%', height: '100%', overflow: 'hidden' }}>
+              <div style={{ display: 'flex', fontWeight: 'bold', color: subTextColor, marginBottom: '0.25rem', fontSize: 'sm', width: '100%' }}>
+                <div style={{ flex: 2, textAlign: 'left' }}>Skill</div>
+                <div style={{ flex: 1, textAlign: 'center' }}>Status</div>
+                <div style={{ flex: 1, textAlign: 'center' }}>Highlight</div>
+              </div>
+              {Array.isArray(result?.skills) && result.skills.length > 0 ? (
+                result.skills.map((skill) => (
+                  <div key={skill.name} style={{ display: 'flex', alignItems: 'center', marginBottom: '0.25rem', fontSize: 'sm', width: '100%' }}>
+                    <div style={{ flex: 2, fontWeight: 'medium', textAlign: 'left' }}>
+                      <Tag colorScheme={SKILL_COLORS[skill.type]} borderRadius="full" mr={2}>{skill.name}</Tag>
+                    </div>
+                    <div style={{ flex: 1, textAlign: 'center' }}>
+                      <Switch isChecked={skill.status} colorScheme="teal" isReadOnly size="sm" />
+                    </div>
+                    <div style={{ flex: 1, textAlign: 'center' }}>
+                      <Switch isChecked={skill.highlight} colorScheme="yellow" isReadOnly size="sm" />
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <Text color={subTextColor}>No skills extracted.</Text>
+              )}
             </div>
-            {Array.isArray(result?.skills) && result.skills.length > 0 ? (
-              result.skills.map((skill) => (
-                <div key={skill.name} style={{ display: 'flex', alignItems: 'center', marginBottom: '0.25rem', fontSize: 'sm', width: '100%' }}>
-                  <div style={{ flex: 2, fontWeight: 'medium', textAlign: 'left' }}>
-                    <Tag colorScheme={SKILL_COLORS[skill.type]} borderRadius="full" mr={2}>{skill.name}</Tag>
-                  </div>
-                  <div style={{ flex: 1, textAlign: 'center' }}>
-                    <Switch isChecked={skill.status} colorScheme="teal" isReadOnly size="sm" />
-                  </div>
-                  <div style={{ flex: 1, textAlign: 'center' }}>
-                    <Switch isChecked={skill.highlight} colorScheme="yellow" isReadOnly size="sm" />
-                  </div>
-                </div>
-              ))
-            ) : (
-              <Text color={subTextColor}>No skills extracted.</Text>
-            )}
           </div>
-        </div>
+        </GridItem>
 
         {/* Missing Skills & Recommendations */}
-        <div style={{ width: '100%', height: '100%', backgroundColor: 'var(--color-card)', borderRadius: '1rem', boxShadow: '0 2px 12px 0 rgba(31, 38, 135, 0.10)', padding: '1.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', gap: '1rem' }}>
-          <h3 style={{ fontWeight: 'bold', marginBottom: '0.5rem', textAlign: 'left', width: '100%' }}>Missing Skills & Recommendations</h3>
-          <div style={{ width: '100%', height: '100%', overflow: 'auto' }}>
-            {result?.missingSkills && result.missingSkills.length > 0 ? (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', width: '100%' }}>
-                {result.missingSkills.map((skill, idx) => (
-                  <div key={idx} style={{ 
-                    padding: '0.75rem', 
-                    backgroundColor: 'var(--color-bg-alt)', 
-                    borderRadius: '0.5rem', 
-                    border: '1px solid var(--color-border)',
-                    width: '100%'
-                  }}>
-                    <Text color={textColor} fontSize="sm" fontWeight="medium">
-                      {skill}
-                    </Text>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <Text color={subTextColor} fontSize="sm">No missing skills identified.</Text>
-            )}
+        <GridItem colSpan={{ base: 1, md: 1 }} rowSpan={1}>
+          <div style={{ width: '100%', maxWidth: '100%', boxSizing: 'border-box', height: '100%', backgroundColor: 'var(--color-card)', borderRadius: '1rem', boxShadow: '0 2px 12px 0 rgba(31, 38, 135, 0.10)', padding: '1.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', gap: '1rem', wordBreak: 'break-word', overflowWrap: 'anywhere' }}>
+            <h3 style={{ fontWeight: 'bold', marginBottom: '0.5rem', textAlign: 'left', width: '100%' }}>Missing Skills & Recommendations</h3>
+            <div style={{ width: '100%', height: '100%', overflow: 'auto' }}>
+              {result?.missingSkills && result.missingSkills.length > 0 ? (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', width: '100%' }}>
+                  {result.missingSkills.map((skill, idx) => (
+                    <div key={idx} style={{ 
+                      padding: '0.75rem', 
+                      backgroundColor: 'var(--color-bg-alt)', 
+                      borderRadius: '0.5rem', 
+                      border: '1px solid var(--color-border)',
+                      width: '100%'
+                    }}>
+                      <Text color={textColor} fontSize="sm" fontWeight="medium">
+                        {skill}
+                      </Text>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <Text color={subTextColor} fontSize="sm">No missing skills identified.</Text>
+              )}
+            </div>
           </div>
-        </div>
+        </GridItem>
 
         {/* Personalized Improvement Suggestions */}
-        <div style={{ width: '100%', height: '100%', backgroundColor: 'var(--color-card)', borderRadius: '1rem', boxShadow: '0 2px 12px 0 rgba(31, 38, 135, 0.10)', padding: '1.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', gap: '1rem' }}>
-          <h3 style={{ fontWeight: 'bold', marginBottom: '0.5rem', textAlign: 'left', width: '100%' }}>Personalized Improvement Suggestions</h3>
-          <div style={{ width: '100%', height: '100%', overflow: 'auto' }}>
-            {result?.improvementSuggestions && result.improvementSuggestions.length > 0 ? (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', width: '100%' }}>
-                {result.improvementSuggestions.map((suggestion, idx) => (
-                  <div key={idx} style={{ 
-                    padding: '0.75rem', 
-                    backgroundColor: 'var(--color-bg-alt)', 
-                    borderRadius: '0.5rem', 
-                    border: '1px solid var(--color-border)',
-                    width: '100%'
-                  }}>
-                    <Text color={textColor} fontSize="sm" fontWeight="medium">
-                      {suggestion}
-                    </Text>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <Text color={subTextColor} fontSize="sm">No improvement suggestions available.</Text>
-            )}
+        <GridItem colSpan={{ base: 1, md: 1 }} rowSpan={1}>
+          <div style={{ width: '100%', maxWidth: '100%', boxSizing: 'border-box', height: '100%', backgroundColor: 'var(--color-card)', borderRadius: '1rem', boxShadow: '0 2px 12px 0 rgba(31, 38, 135, 0.10)', padding: '1.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', gap: '1rem', wordBreak: 'break-word', overflowWrap: 'anywhere' }}>
+            <h3 style={{ fontWeight: 'bold', marginBottom: '0.5rem', textAlign: 'left', width: '100%' }}>Personalized Improvement Suggestions</h3>
+            <div style={{ width: '100%', height: '100%', overflow: 'auto' }}>
+              {result?.improvementSuggestions && result.improvementSuggestions.length > 0 ? (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', width: '100%' }}>
+                  {result.improvementSuggestions.map((suggestion, idx) => (
+                    <div key={idx} style={{ 
+                      padding: '0.75rem', 
+                      backgroundColor: 'var(--color-bg-alt)', 
+                      borderRadius: '0.5rem', 
+                      border: '1px solid var(--color-border)',
+                      width: '100%'
+                    }}>
+                      <Text color={textColor} fontSize="sm" fontWeight="medium">
+                        {suggestion}
+                      </Text>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <Text color={subTextColor} fontSize="sm">No improvement suggestions available.</Text>
+              )}
+            </div>
           </div>
-        </div>
+        </GridItem>
 
         {/* What Matters Most */}
-        <div style={{ width: '100%', height: '100%', backgroundColor: 'var(--color-card)', borderRadius: '1rem', boxShadow: '0 2px 12px 0 rgba(31, 38, 135, 0.10)', padding: '1.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', gap: '1rem' }}>
-          <h3 style={{ fontWeight: 'bold', marginBottom: '0.5rem', textAlign: 'left', width: '100%' }}>What Matters Most</h3>
-          <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'flex-start' }}>
-            {result?.whatMattersMost ? (
-              <div style={{ 
-                padding: '1rem', 
-                backgroundColor: 'var(--color-bg-alt)', 
-                borderRadius: '0.5rem', 
-                border: '1px solid var(--color-border)',
-                width: '100%',
-                minHeight: '80px'
-              }}>
-                <Text color={textColor} fontSize="sm" fontWeight="medium" lineHeight="1.5">
-                  {result.whatMattersMost}
-                </Text>
-              </div>
-            ) : (
-              <Text color={subTextColor} fontSize="sm">No priority requirements identified.</Text>
-            )}
+        <GridItem colSpan={{ base: 1, md: 1 }} rowSpan={1}>
+          <div style={{ width: '100%', maxWidth: '100%', boxSizing: 'border-box', height: '100%', backgroundColor: 'var(--color-card)', borderRadius: '1rem', boxShadow: '0 2px 12px 0 rgba(31, 38, 135, 0.10)', padding: '1.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', gap: '1rem', wordBreak: 'break-word', overflowWrap: 'anywhere' }}>
+            <h3 style={{ fontWeight: 'bold', marginBottom: '0.5rem', textAlign: 'left', width: '100%' }}>What Matters Most</h3>
+            <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'flex-start' }}>
+              {result?.whatMattersMost ? (
+                <div style={{ 
+                  padding: '1rem', 
+                  backgroundColor: 'var(--color-bg-alt)', 
+                  borderRadius: '0.5rem', 
+                  border: '1px solid var(--color-border)',
+                  width: '100%',
+                  minHeight: '80px'
+                }}>
+                  <Text color={textColor} fontSize="sm" fontWeight="medium" lineHeight="1.5">
+                    {result.whatMattersMost}
+                  </Text>
+                </div>
+              ) : (
+                <Text color={subTextColor} fontSize="sm">No priority requirements identified.</Text>
+              )}
+            </div>
           </div>
-        </div>
-      </div>
+        </GridItem>
+      </Grid>
     </div>
   );
 };

@@ -10,7 +10,14 @@ const Spinner = () => (
 );
 
 // Basic Avatar components (can be extended with actual images/logic later)
-const UserAvatar = () => <div className="avatar user-avatar">U</div>;
+const UserAvatar = () => (
+  <div className="avatar user-avatar">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="12" cy="8" r="4" />
+      <path d="M4 20c0-2.5 3.5-4 8-4s8 1.5 8 4" />
+    </svg>
+  </div>
+);
 const AssistantAvatar = () => (
   <div className="avatar assistant-avatar">
     

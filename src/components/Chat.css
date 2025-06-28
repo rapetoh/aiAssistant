@@ -55,21 +55,28 @@
   justify-content: flex-start;
 }
 
-.avatar-wrapper {
-  flex-shrink: 0;
-  width: 40px; /* Slightly larger avatar */
-  height: 40px; /* Slightly larger avatar */
+.avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
-  font-weight: bold;
-  color: var(--color-light-bg-secondary);
-  font-size: 1em; /* Slightly larger avatar text */
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  margin: 0;
+  padding: 0;
 }
 
 .user-avatar {
-  background-color: var(--color-primary);
+  background: var(--color-primary);
+}
+
+.user-avatar svg {
+  width: 28px;
+  height: 28px;
+  display: block;
+  color: #fff;
+  fill: #fff;
 }
 
 .assistant-avatar {
@@ -233,10 +240,9 @@
     gap: 10px;
   }
 
-  .avatar-wrapper {
+  .avatar {
     width: 32px;
     height: 32px;
-    font-size: 0.8em;
   }
 
   .message-bubble {
