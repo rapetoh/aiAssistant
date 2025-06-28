@@ -44,7 +44,8 @@
 /* Apply theme variables */
 [data-theme="light"] {
   --color-bg: var(--color-light-bg);
-  --color-bg-alt: var(--color-light-bg-secondary);
+  --color-bg-alt: #f6f7fb;
+  --color-card: #fff;
   --color-text: var(--color-light-text);
   --color-text-secondary: var(--color-light-text-secondary);
   --color-border: var(--color-light-border);
@@ -61,7 +62,8 @@
 
 [data-theme="dark"] {
   --color-bg: var(--color-dark-bg);
-  --color-bg-alt: var(--color-dark-bg-secondary);
+  --color-bg-alt: #23242b;
+  --color-card: #181920;
   --color-text: var(--color-dark-text);
   --color-text-secondary: var(--color-dark-text-secondary);
   --color-border: var(--color-dark-border);

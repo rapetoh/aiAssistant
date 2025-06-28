@@ -32,7 +32,7 @@ const Welcome = () => {
   const userName = "there"; 
 
   return (
-    <div className="welcome-container">
+    <div className="welcome-container" style={{ backgroundColor: 'var(--color-bg-alt)' }}>
       <div className="welcome-header">
         <h1>Hello {userName}!</h1>
         <p>How can I help you today?</p>

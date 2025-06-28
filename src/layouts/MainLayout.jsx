@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
+import { useColorModeValue } from '@chakra-ui/react';
 import Sidebar from '../components/Sidebar';
 import { chatService } from '../services/chatService';
 
@@ -8,6 +9,7 @@ const MainLayout = () => {
   const [currentChatId, setCurrentChatId] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
+  const mainBg = useColorModeValue('white', '#1A202C'); // Light: white, Dark: gray.800
 
   useEffect(() => {
     loadChats();
@@ -70,7 +72,7 @@ const MainLayout = () => {
         onChatCreate={handleCreateChat}
         onChatDelete={handleDeleteChat}
       />
-      <div className="main-content">
+      <div className="main-content" style={{ backgroundColor: mainBg }}>
         <Outlet context={{ chats, handleCreateChat, handleDeleteChat }} />
       </div>
     </div>

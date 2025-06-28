@@ -7,6 +7,7 @@ import DocumentsPage from './pages/DocumentsPage';
 import SettingsPage from './pages/SettingsPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import MatcherPage from './pages/MatcherPage';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import './App.css';
@@ -24,6 +25,7 @@ function App() {
               <Route index element={<Welcome />} />
               <Route path="chat/:chatId" element={<ChatPage />} />
               <Route path="documents" element={<DocumentsPage />} />
+              <Route path="matcher" element={<MatcherPage />} />
               <Route path="settings" element={<SettingsPage />} />
             </Route>
           </Routes>

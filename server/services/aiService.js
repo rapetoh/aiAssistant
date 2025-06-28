@@ -90,6 +90,85 @@ class AIService {
       throw error;
     }
   }
+
+  async generateMatchAnalysis(resume, jobDescription) {
+    const prompt = `
+      Analyze the following resume and job description. Provide a detailed analysis in JSON format.
+
+      The JSON object must have the following structure:
+      {
+        "name": "<candidate's full name>",
+        "role": "<candidate's current or most recent job title>",
+        "matchScore": <a number between 0 and 100 representing the percentage match>,
+        "summary": "<a short, one-sentence summary of the candidate's suitability>",
+        "recommendations": [
+          "<a string with a specific, actionable recommendation to improve the resume>",
+          "<another string with a specific, actionable recommendation>",
+          "...and so on"
+        ],
+        "jobKeywords": [
+          { "word": "<keyword>", "category": "<Hard Skill|Soft Skill|Core|Emphasis>" },
+          { "word": "<keyword>", "category": "<Hard Skill|Soft Skill|Core|Emphasis>" }
+        ]
+      }
+
+      Here is the resume:
+      ---
+      ${resume}
+      ---
+
+      Here is the job description:
+      ---
+      ${jobDescription}
+      ---
+
+      Now, provide the JSON object.
+    `;
+
+    try {
+      const response = await axios.post(
+        AI_CONFIG.cohere.baseUrl,
+        {
+          model: AI_CONFIG.cohere.model,
+          messages: [{ role: 'user', content: prompt }],
+          stream: false // We need the full response, not a stream
+        },
+        {
+          headers: {
+            'Authorization': AI_CONFIG.cohere.apiKey,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      let responseText = null;
+      // Handle OpenAI-style response
+      if (response.data && Array.isArray(response.data.choices) && response.data.choices.length > 0 && response.data.choices[0].message && response.data.choices[0].message.content) {
+        responseText = response.data.choices[0].message.content;
+      }
+      // Handle Cohere-style response
+      else if (response.data && response.data.message && Array.isArray(response.data.message.content) && response.data.message.content.length > 0 && response.data.message.content[0].text) {
+        responseText = response.data.message.content[0].text;
+      }
+      if (!responseText) {
+        throw new Error(
+          'AI API did not return expected choices array or message object. Full response: ' + JSON.stringify(response.data)
+        );
+      }
+      // Remove code block markers if present
+      responseText = responseText.replace(/^```json|^```|```$/gm, '').trim();
+      // Extract the JSON part from the response text
+      const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+      if (jsonMatch && jsonMatch[0]) {
+        return JSON.parse(jsonMatch[0]);
+      } else {
+        throw new Error('Failed to parse JSON response from AI. Full response text: ' + responseText);
+      }
+    } catch (error) {
+      console.error('Error in generateMatchAnalysis:', error);
+      throw error;
+    }
+  }
 }
 
 const aiService = new AIService();

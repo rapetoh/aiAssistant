@@ -67,7 +67,6 @@ const DocumentsPage = () => {
   return (
     <div className="documents-page-container">
       <h1 className="documents-page-title">Your Documents</h1>
-
       <div className="upload-section">
         <label htmlFor="file-upload" className="upload-button">
           {uploading ? 'Uploading...' : 'Upload New Document'}
@@ -83,14 +82,11 @@ const DocumentsPage = () => {
         />
         {uploadError && <p className="upload-error-message">{uploadError}</p>}
       </div>
-
       {loading && <p className="loading-message">Loading documents...</p>}
       {error && <p className="error-message">{error}</p>}
-
       {!loading && !error && documents.length === 0 && (
         <p className="no-documents-message">No documents uploaded yet. Upload one to get started!</p>
       )}
-
       {!loading && !error && documents.length > 0 && (
         <div className="documents-list">
           {documents.map((doc) => (
