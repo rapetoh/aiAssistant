@@ -62,9 +62,73 @@ export const addMessage = async (req, res) => {
     res.setHeader('Connection', 'keep-alive');
     let fullResponse = '';
     try {
+      // Fetch the user's most recent document (e.g., resume)
+      const latestDoc = await Document.findOne({ user: req.user.id }).sort({ uploadDate: -1 });
+      console.log('Latest document found:', latestDoc ? `Title: ${latestDoc.title}, Content length: ${latestDoc.content?.length || 0}` : 'No document found');
+      
+      let contextPrefix = '';
+      if (latestDoc && latestDoc.content) {
+        // Truncate resume content to prevent large payloads
+        const MAX_RESUME_LENGTH = 1000; // Limit to 1000 characters
+        const truncatedContent = latestDoc.content.length > MAX_RESUME_LENGTH 
+          ? latestDoc.content.substring(0, MAX_RESUME_LENGTH) + '...'
+          : latestDoc.content;
+        contextPrefix = `User Resume/Profile:\n${truncatedContent}\n\n`;
+        console.log('Resume context prefix created, length:', contextPrefix.length);
+        console.log('Resume context preview:', contextPrefix.substring(0, 200) + '...');
+      } else {
+        console.log('No resume content available to include');
+      }
+      
+      // Limit message history to prevent large payloads
+      // Only include the last 4 messages (2 user, 2 assistant) plus context
+      const recentMessages = userChat.messages.slice(-4);
+      console.log('Recent messages count:', recentMessages.length);
+      
+      // Prepend the document content to the first user message
+      const messagesWithContext = [...recentMessages];
+      if (contextPrefix && messagesWithContext.length > 0) {
+        const firstUserMsgIdx = messagesWithContext.findIndex(m => m.role === 'user');
+        console.log('First user message index:', firstUserMsgIdx);
+        if (firstUserMsgIdx !== -1) {
+          const originalContent = messagesWithContext[firstUserMsgIdx].content;
+          messagesWithContext[firstUserMsgIdx] = {
+            ...messagesWithContext[firstUserMsgIdx],
+            content: `${contextPrefix}${originalContent}`
+          };
+          console.log('Updated first user message with resume context. Original length:', originalContent.length, 'New length:', messagesWithContext[firstUserMsgIdx].content.length);
+        } else {
+          console.log('No user message found to prepend resume context to');
+        }
+      }
+      
+      // Clean messages: ensure all have role/content and filter out error messages
+      const cleanedMessages = messagesWithContext
+        .filter(m => m.role && m.content && m.content !== 'Sorry, I encountered an error while processing your request.' && m.content !== 'Sorry, I encountered an error while processing your request. Please try again.')
+        .map(m => ({ role: m.role, content: m.content }));
+      
+      console.log('Cleaned messages count:', cleanedMessages.length);
+      console.log('Cleaned messages:', cleanedMessages.map(m => ({ role: m.role, contentLength: m.content.length, contentPreview: m.content.substring(0, 100) + '...' })));
+      
+      // If no valid messages remain, create a message with the resume context and the current user message
+      let finalMessages = cleanedMessages;
+      if (finalMessages.length === 0) {
+        console.log('No valid messages found, creating message with resume context');
+        const userMessage = { role: 'user', content: content };
+        if (contextPrefix) {
+          userMessage.content = `${contextPrefix}${content}`;
+        }
+        finalMessages = [userMessage];
+        console.log('Created fallback message with resume context');
+      }
+      
+      // Log the payload size for debugging
+      const payloadSize = JSON.stringify(finalMessages).length;
+      console.log(`Sending payload to Cohere API: ${payloadSize} bytes`);
+      
       // Get AI response using the specified provider or chat's default
       const aiResponse = await aiService.generateResponse(
-        userChat.messages,
+        finalMessages,
         provider || userChat.provider,
         (chunk) => {
           fullResponse += chunk;
@@ -81,11 +145,21 @@ export const addMessage = async (req, res) => {
       res.end();
     } catch (error) {
       console.error('Error generating AI response:', error);
+      
+      // Log the actual Cohere error response if available
+      if (error.response && error.response.data) {
+        console.error('Cohere API error details:', {
+          status: error.response.status,
+          statusText: error.response.statusText,
+          data: error.response.data
+        });
+      }
+      
       // Only add error message if we haven't sent any response yet
       if (!fullResponse) {
         userChat.messages.push({ 
           role: 'assistant', 
-          content: 'Sorry, I encountered an error while processing your request.' 
+          content: 'Sorry, I encountered an error while processing your request. Please try again.' 
         });
         await userChat.save();
       }

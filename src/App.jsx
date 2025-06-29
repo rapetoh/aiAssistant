@@ -8,8 +8,10 @@ import SettingsPage from './pages/SettingsPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import MatcherPage from './pages/MatcherPage';
+import SessionExpiredModal from './components/SessionExpiredModal';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
+import './utils/tokenUtils'; // Import token utilities for global access
 import './App.css';
 import './index.css';
 
@@ -18,6 +20,7 @@ function App() {
     <Router>
       <ThemeProvider>
         <AuthProvider>
+          <SessionExpiredModal />
           <Routes>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />

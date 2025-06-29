@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { chatService } from '../services/chatService';
 import './Chat.css';
 import { marked } from 'marked'; // For rendering markdown
+import LoadingSpinner from './LoadingSpinner';
 
 const Spinner = () => (
   <div className="spinner-container">
@@ -18,9 +19,10 @@ const UserAvatar = () => (
     </svg>
   </div>
 );
+
 const AssistantAvatar = () => (
   <div className="avatar assistant-avatar">
-    
+    <LoadingSpinner size="small" color="accent" />
   </div>
 );
 
@@ -68,127 +70,158 @@ const Chat = ({ chatId, chatTitle }) => {
     e.preventDefault();
     if (!input.trim() || isLoading) return;
 
-    const userMessageContent = input.trim();
-    const userMessage = { role: 'user', content: userMessageContent };
-    setMessages(prev => [...prev, userMessage]);
+    const userMessage = input.trim();
     setInput('');
     setIsLoading(true);
-    setCurrentStreamingMessage('');
+
+    // Add user message immediately
+    const newUserMessage = { role: 'user', content: userMessage };
+    setMessages(prev => [...prev, newUserMessage]);
 
     try {
+      // Add a placeholder assistant message that will be updated
+      const placeholderMessage = { role: 'assistant', content: '' };
+      setMessages(prev => [...prev, placeholderMessage]);
+
+      // Send message and get streaming response
       await chatService.sendMessage(
         chatId,
-        userMessageContent,
-        // onChunk callback
-        (chunk) => {
-          setCurrentStreamingMessage(prev => prev + chunk);
+        userMessage,
+        (streamingContent) => {
+          setCurrentStreamingMessage(streamingContent);
         },
-        // onDone callback
-        (fullResponse) => {
+        (finalContent) => {
           setMessages(prev => {
-            // Only add the streaming message if it's not empty
-            if (fullResponse) {
-              return [...prev, { role: 'assistant', content: fullResponse }];
-            } 
-            return prev; // If empty, it means an error or no content, don't add
+            const newMessages = [...prev];
+            const lastMessage = newMessages[newMessages.length - 1];
+            if (lastMessage && lastMessage.role === 'assistant') {
+              lastMessage.content = finalContent || 'No response received.';
+            }
+            return newMessages;
           });
           setCurrentStreamingMessage('');
-          setIsLoading(false);
         },
-        // onError callback
         (error) => {
-          console.error('Error sending message:', error);
-          setMessages(prev => [...prev, { role: 'assistant', content: 'Sorry, I encountered an error while processing your message. Please try again.' }]);
-          setCurrentStreamingMessage(''); // Clear any partial streaming message
-          setIsLoading(false);
+          setMessages(prev => {
+            const newMessages = [...prev];
+            const lastMessage = newMessages[newMessages.length - 1];
+            if (lastMessage && lastMessage.role === 'assistant') {
+              lastMessage.content = 'Sorry, I encountered an error. Please try again.';
+            }
+            return newMessages;
+          });
+          setCurrentStreamingMessage('');
         }
       );
     } catch (error) {
       console.error('Error sending message:', error);
-      setMessages(prev => [...prev, { role: 'assistant', content: 'Sorry, I encountered an error. Please check your network connection or API key.' }]);
-      setCurrentStreamingMessage(''); // Clear any partial streaming message
+      // Update the placeholder message with error
+      setMessages(prev => {
+        const newMessages = [...prev];
+        const lastMessage = newMessages[newMessages.length - 1];
+        if (lastMessage && lastMessage.role === 'assistant') {
+          lastMessage.content = 'Sorry, I encountered an error. Please try again.';
+        }
+        return newMessages;
+      });
+    } finally {
       setIsLoading(false);
     }
   };
 
-  const handleExportChat = () => {
-    if (!chatId || messages.length === 0) return;
-
-    // Use the chatTitle prop if available, otherwise fallback to a generic name
-    const fileName = `${chatTitle.replace(/[^a-z0-9]/gi, '_')}.txt`;
-    const fileContent = messages.map(msg => `${msg.role}: ${msg.content}`).join('\n\n');
-    const blob = new Blob([fileContent], { type: 'text/plain;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = fileName;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit(e);
+    }
   };
+
+  if (isLoading && messages.length === 0) {
+    return (
+      <div className="chat-container">
+        <div className="chat-loading">
+          <LoadingSpinner size="large" color="primary" text="Loading chat..." />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="chat-container">
       <div className="chat-actions-bar">
-        <button onClick={handleExportChat} className="export-chat-button">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        <button className="export-chat-button">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7,10 12,15 17,10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
           Export Chat
         </button>
       </div>
+
       <div className="messages-container">
-        {isLoading && messages.length === 0 ? (
-          <Spinner />
-        ) : (
-          messages.map((message, index) => (
-            <div key={message._id || index} className={`message-row ${message.role}`}>
-              <div className="avatar-wrapper">
-                {message.role === 'user' ? <UserAvatar /> : <AssistantAvatar />}
-              </div>
-              <div className="message-bubble">
-                <div 
-                  className="message-content"
-                  dangerouslySetInnerHTML={{ __html: marked.parse(message.content) }}
-                />
-              </div>
-            </div>
-          ))
-        )}
-        {currentStreamingMessage && (
-          <div className="message-row assistant">
-            <div className="avatar-wrapper">
-              <AssistantAvatar />
-            </div>
+        {messages.map((message, index) => (
+          <div key={index} className={`message-row ${message.role}`}>
+            {message.role === 'user' ? <UserAvatar /> : <AssistantAvatar />}
             <div className="message-bubble">
               <div 
                 className="message-content"
-                dangerouslySetInnerHTML={{ __html: marked.parse(currentStreamingMessage) }}
+                dangerouslySetInnerHTML={{ 
+                  __html: marked(message.content || '') 
+                }}
+              />
+            </div>
+          </div>
+        ))}
+        
+        {/* Show streaming message if there is one */}
+        {currentStreamingMessage && (
+          <div className="message-row assistant">
+            <AssistantAvatar />
+            <div className="message-bubble">
+              <div 
+                className="message-content"
+                dangerouslySetInnerHTML={{ 
+                  __html: marked(currentStreamingMessage) 
+                }}
               />
             </div>
           </div>
         )}
-        {isLoading && currentStreamingMessage && (
+
+        {/* Show loading indicator when waiting for response */}
+        {isLoading && !currentStreamingMessage && (
           <div className="message-row assistant">
-             <div className="avatar-wrapper">
-              <AssistantAvatar />
-            </div>
+            <AssistantAvatar />
             <div className="message-bubble">
-              <Spinner />
+              <div className="message-content">
+                <LoadingSpinner size="small" color="accent" text="Thinking..." />
+              </div>
             </div>
           </div>
         )}
+        
         <div ref={messagesEndRef} />
       </div>
+
       <form onSubmit={handleSubmit} className="input-form">
         <input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Send a message..."
+          onKeyPress={handleKeyPress}
+          placeholder="Type your message..."
           disabled={isLoading}
         />
-        <button type="submit" disabled={isLoading}>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+        <button type="submit" disabled={!input.trim() || isLoading}>
+          {isLoading ? (
+            <LoadingSpinner size="small" color="primary" />
+          ) : (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="22" y1="2" x2="11" y2="13"></line>
+              <polygon points="22,2 15,22 11,13 2,9"></polygon>
+            </svg>
+          )}
         </button>
       </form>
     </div>

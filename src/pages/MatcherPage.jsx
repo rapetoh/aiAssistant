@@ -22,6 +22,7 @@ import { FiUploadCloud } from 'react-icons/fi';
 import { matcherService } from '../services/matcherService';
 import { CircularProgressbarWithChildren, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const SKILL_COLORS = {
   'Hard Skill': 'teal',
@@ -43,6 +44,8 @@ const MatcherPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [isCachedResult, setIsCachedResult] = useState(false);
+  const [analysisCount, setAnalysisCount] = useState(0);
   const fileInputRef = useRef(null);
 
   // Color mode aware values
@@ -63,7 +66,7 @@ const MatcherPage = () => {
   const textareaPlaceholder = useColorModeValue('gray.400', 'gray.400');
   const { colorMode } = useColorMode();
 
-  const handleMatch = async () => {
+  const handleMatch = async (forceReanalyze = false) => {
     if (!resumeFile) {
       setError('Please upload a resume file.');
       return;
@@ -71,14 +74,27 @@ const MatcherPage = () => {
     setIsLoading(true);
     setError(null);
     setResult(null);
+    setIsCachedResult(false);
+    
     try {
-      const analysis = await matcherService.getMatchAnalysis(resumeFile, jobDescription);
+      // Add a timestamp parameter to force re-analysis if requested
+      const analysis = await matcherService.getMatchAnalysis(
+        resumeFile, 
+        jobDescription, 
+        forceReanalyze ? Date.now() : undefined
+      );
       setResult(analysis);
+      setAnalysisCount(prev => prev + 1);
+      setIsCachedResult(!forceReanalyze && analysisCount > 0);
     } catch (err) {
       setError(err.message || 'An unexpected error occurred.');
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleReanalyze = () => {
+    handleMatch(true);
   };
 
   const handleFileChange = (e) => {
@@ -129,9 +145,9 @@ const MatcherPage = () => {
     : '#E0E0E0';
 
   return (
-    <div style={{ minHeight: '100vh', width: '100%', backgroundColor: 'var(--color-bg)', overflowX: 'hidden', padding: '2rem' }}>
+    <div style={{ minHeight: '100vh', width: '100%', backgroundColor: 'var(--color-bg)', overflowX: 'auto', padding: '2rem 0.5rem' }}>
       <Grid
-        templateColumns={{ base: '1fr', md: 'repeat(4, 1fr)' }}
+        templateColumns={{ base: '1fr', md: 'repeat(4, minmax(0, 1fr))' }}
         templateRows={{ base: 'none', md: 'repeat(2, 1fr)' }}
         gap={6}
         width="100%"
@@ -141,7 +157,8 @@ const MatcherPage = () => {
         bg="var(--color-bg-alt)"
         borderRadius="1.5rem"
         boxShadow="0 4px 32px 0 rgba(31,38,135,0.10)"
-        p="2rem"
+        p={{ base: '1rem', md: '2rem' }}
+        style={{ maxWidth: '100vw', overflowX: 'auto' }}
       >
         {/* Upload Resume */}
         <GridItem colSpan={{ base: 1, md: 1 }} rowSpan={1}>
@@ -210,13 +227,42 @@ const MatcherPage = () => {
               w="100%"
               borderRadius="full"
               fontWeight="bold"
-              onClick={handleMatch}
+              onClick={() => handleMatch()}
               isLoading={isLoading}
-              disabled={!resumeFile || !jobDescription}
+              loadingText="Analyzing..."
+              disabled={!resumeFile || !jobDescription || isLoading}
               mt={1}
             >
-              Analyze Match
+              {isLoading ? (
+                <LoadingSpinner size="small" color="primary" />
+              ) : (
+                "Analyze Match"
+              )}
             </Button>
+            
+            {/* Re-analyze button and cache indicator */}
+            {result && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '12px' }}>
+                {isCachedResult && (
+                  <Text fontSize="xs" color="blue.500" textAlign="center">
+                    📋 Using cached result for consistency
+                  </Text>
+                )}
+                <Button
+                  colorScheme="blue"
+                  size="sm"
+                  w="100%"
+                  borderRadius="full"
+                  fontWeight="medium"
+                  onClick={handleReanalyze}
+                  disabled={isLoading}
+                  variant="outline"
+                >
+                  🔄 Re-analyze (Fresh AI Analysis)
+                </Button>
+              </div>
+            )}
+
             {error && (
               <Text color={errorColor} mt={2} fontWeight="bold" fontSize="sm">{error}</Text>
             )}
@@ -251,7 +297,7 @@ const MatcherPage = () => {
 
         {/* Candidate Info & Match Score */}
         <GridItem colSpan={{ base: 1, md: 1 }} rowSpan={2}>
-          <div style={{ width: '100%', maxWidth: '100%', boxSizing: 'border-box', height: '100%', backgroundColor: 'var(--color-card)', borderRadius: '1rem', boxShadow: '0 2px 12px 0 rgba(31, 38, 135, 0.10)', padding: '1.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', gap: '1rem', wordBreak: 'break-word', overflowWrap: 'anywhere', height: '100%' }}>
+          <div style={{ width: '100%', maxWidth: '100%', boxSizing: 'border-box', height: '100%', backgroundColor: 'var(--color-card)', borderRadius: '1rem', boxShadow: '0 2px 12px 0 rgba(31, 38, 135, 0.10)', padding: '1.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', gap: '1rem', wordBreak: 'break-word', overflowWrap: 'anywhere' }}>
             <h2 style={{ fontWeight: 'bold', marginBottom: '0.5rem', textAlign: 'left', width: '100%' }}>Candidate</h2>
             <Text color={headingColor} fontWeight="bold" fontSize="md" mb={1} textAlign="left" w="100%">
               {result?.name || 'Candidate Name'}
@@ -302,8 +348,8 @@ const MatcherPage = () => {
           </div>
         </GridItem>
 
-        {/* Skills Table */}
-        <GridItem colSpan={{ base: 1, md: 1 }} rowSpan={1}>
+        {/* Hard Skills (make wider) */}
+        <GridItem colSpan={{ base: 1, md: 2 }} rowSpan={1}>
           <div style={{ width: '100%', maxWidth: '100%', boxSizing: 'border-box', height: '100%', backgroundColor: 'var(--color-card)', borderRadius: '1rem', boxShadow: '0 2px 12px 0 rgba(31, 38, 135, 0.10)', padding: '1.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', gap: '1rem', wordBreak: 'break-word', overflowWrap: 'anywhere' }}>
             <h3 style={{ fontWeight: 'bold', marginBottom: '0.5rem', textAlign: 'left', width: '100%' }}>Hard Skills</h3>
             <div style={{ borderRadius: 'lg', backgroundColor: tagBg, padding: '0.5rem', boxShadow: 'sm', width: '100%', height: '100%', overflow: 'hidden' }}>
@@ -333,64 +379,66 @@ const MatcherPage = () => {
           </div>
         </GridItem>
 
-        {/* Missing Skills & Recommendations */}
-        <GridItem colSpan={{ base: 1, md: 1 }} rowSpan={1}>
-          <div style={{ width: '100%', maxWidth: '100%', boxSizing: 'border-box', height: '100%', backgroundColor: 'var(--color-card)', borderRadius: '1rem', boxShadow: '0 2px 12px 0 rgba(31, 38, 135, 0.10)', padding: '1.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', gap: '1rem', wordBreak: 'break-word', overflowWrap: 'anywhere' }}>
-            <h3 style={{ fontWeight: 'bold', marginBottom: '0.5rem', textAlign: 'left', width: '100%' }}>Missing Skills & Recommendations</h3>
-            <div style={{ width: '100%', height: '100%', overflow: 'auto' }}>
-              {result?.missingSkills && result.missingSkills.length > 0 ? (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', width: '100%' }}>
-                  {result.missingSkills.map((skill, idx) => (
-                    <div key={idx} style={{ 
-                      padding: '0.75rem', 
-                      backgroundColor: 'var(--color-bg-alt)', 
-                      borderRadius: '0.5rem', 
-                      border: '1px solid var(--color-border)',
-                      width: '100%'
-                    }}>
-                      <Text color={textColor} fontSize="sm" fontWeight="medium">
-                        {skill}
-                      </Text>
+        {/* Group: Missing Skills & Recommendations + Personalized Improvement Suggestions */}
+        <GridItem colSpan={{ base: 1, md: 2 }} rowSpan={1}>
+          <div style={{ display: 'flex', flexDirection: 'row', gap: '2rem', width: '100%' }}>
+            <div style={{ flex: 1 }}>
+              <div style={{ width: '100%', maxWidth: '100%', boxSizing: 'border-box', height: '100%', backgroundColor: 'var(--color-card)', borderRadius: '1rem', boxShadow: '0 2px 12px 0 rgba(31, 38, 135, 0.10)', padding: '1.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', gap: '1rem', wordBreak: 'break-word', overflowWrap: 'anywhere' }}>
+                <h3 style={{ fontWeight: 'bold', marginBottom: '0.5rem', textAlign: 'left', width: '100%' }}>Missing Skills & Recommendations</h3>
+                <div style={{ width: '100%', height: '100%', overflow: 'auto' }}>
+                  {result?.missingForPerfectMatch && result.missingForPerfectMatch.length > 0 ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', width: '100%' }}>
+                      {result.missingForPerfectMatch.map((item, idx) => (
+                        <div key={idx} style={{ 
+                          padding: '0.75rem', 
+                          backgroundColor: 'var(--color-bg-alt)', 
+                          borderRadius: '0.5rem', 
+                          border: '1px solid var(--color-border)',
+                          width: '100%'
+                        }}>
+                          <Text color={textColor} fontSize="sm" fontWeight="medium">
+                            {item}
+                          </Text>
+                        </div>
+                      ))}
                     </div>
-                  ))}
+                  ) : (
+                    <Text color={subTextColor} fontSize="sm">No missing elements for a perfect match!</Text>
+                  )}
                 </div>
-              ) : (
-                <Text color={subTextColor} fontSize="sm">No missing skills identified.</Text>
-              )}
+              </div>
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={{ width: '100%', maxWidth: '100%', boxSizing: 'border-box', height: '100%', backgroundColor: 'var(--color-card)', borderRadius: '1rem', boxShadow: '0 2px 12px 0 rgba(31, 38, 135, 0.10)', padding: '1.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', gap: '1rem', wordBreak: 'break-word', overflowWrap: 'anywhere' }}>
+                <h3 style={{ fontWeight: 'bold', marginBottom: '0.5rem', textAlign: 'left', width: '100%' }}>Personalized Improvement Suggestions</h3>
+                <div style={{ width: '100%', height: '100%', overflow: 'auto' }}>
+                  {result?.improvementSuggestions && result.improvementSuggestions.length > 0 ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', width: '100%' }}>
+                      {result.improvementSuggestions.map((suggestion, idx) => (
+                        <div key={idx} style={{ 
+                          padding: '0.75rem', 
+                          backgroundColor: 'var(--color-bg-alt)', 
+                          borderRadius: '0.5rem', 
+                          border: '1px solid var(--color-border)',
+                          width: '100%'
+                        }}>
+                          <Text color={textColor} fontSize="sm" fontWeight="medium">
+                            {suggestion}
+                          </Text>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <Text color={subTextColor} fontSize="sm">No improvement suggestions available.</Text>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         </GridItem>
 
-        {/* Personalized Improvement Suggestions */}
-        <GridItem colSpan={{ base: 1, md: 1 }} rowSpan={1}>
-          <div style={{ width: '100%', maxWidth: '100%', boxSizing: 'border-box', height: '100%', backgroundColor: 'var(--color-card)', borderRadius: '1rem', boxShadow: '0 2px 12px 0 rgba(31, 38, 135, 0.10)', padding: '1.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', gap: '1rem', wordBreak: 'break-word', overflowWrap: 'anywhere' }}>
-            <h3 style={{ fontWeight: 'bold', marginBottom: '0.5rem', textAlign: 'left', width: '100%' }}>Personalized Improvement Suggestions</h3>
-            <div style={{ width: '100%', height: '100%', overflow: 'auto' }}>
-              {result?.improvementSuggestions && result.improvementSuggestions.length > 0 ? (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', width: '100%' }}>
-                  {result.improvementSuggestions.map((suggestion, idx) => (
-                    <div key={idx} style={{ 
-                      padding: '0.75rem', 
-                      backgroundColor: 'var(--color-bg-alt)', 
-                      borderRadius: '0.5rem', 
-                      border: '1px solid var(--color-border)',
-                      width: '100%'
-                    }}>
-                      <Text color={textColor} fontSize="sm" fontWeight="medium">
-                        {suggestion}
-                      </Text>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <Text color={subTextColor} fontSize="sm">No improvement suggestions available.</Text>
-              )}
-            </div>
-          </div>
-        </GridItem>
-
-        {/* What Matters Most */}
-        <GridItem colSpan={{ base: 1, md: 1 }} rowSpan={1}>
+        {/* What Matters Most (make wider) */}
+        <GridItem colSpan={{ base: 1, md: 2 }} rowSpan={1}>
           <div style={{ width: '100%', maxWidth: '100%', boxSizing: 'border-box', height: '100%', backgroundColor: 'var(--color-card)', borderRadius: '1rem', boxShadow: '0 2px 12px 0 rgba(31, 38, 135, 0.10)', padding: '1.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', gap: '1rem', wordBreak: 'break-word', overflowWrap: 'anywhere' }}>
             <h3 style={{ fontWeight: 'bold', marginBottom: '0.5rem', textAlign: 'left', width: '100%' }}>What Matters Most</h3>
             <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'flex-start' }}>

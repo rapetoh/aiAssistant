@@ -224,7 +224,7 @@ const Sidebar = ({
                 key={chat._id}
                 to={`/chat/${chat._id}`}
                 className={({ isActive }) =>
-                  `chat-item ${isActive || currentChatId === chat._id ? 'active' : ''}`
+                  `nav-link chat-item ${isActive || currentChatId === chat._id ? 'active' : ''}`
                 }
                 style={{ textDecoration: 'none' }}
                 onClick={handleNavClick}

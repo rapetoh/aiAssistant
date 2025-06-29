@@ -9,25 +9,109 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [authError, setAuthError] = useState(null);
 
-  useEffect(() => {
-    // Try to load user from token if it exists
-    if (token) {
-      // In a real app, you might want to verify the token with the backend
-      // or decode it to get user info. For now, we'll just set a dummy user
-      // if a token exists, or fetch user profile from backend.
-      // For simplicity, let's assume if token exists, user is logged in.
-      // A more robust solution would involve a /profile endpoint to fetch user details.
-      try {
-        // Example: Decode JWT to get user details (client-side decode, not verification)
-        const decodedUser = JSON.parse(atob(token.split('.')[1]));
-        setUser({ id: decodedUser.id, username: decodedUser.username || 'User', email: decodedUser.email });
-      } catch (e) {
-        console.error("Failed to decode token or token invalid:", e);
-        logout(); // Logout if token is invalid
-      }
+  // Function to check if token is expired
+  const isTokenExpired = (token) => {
+    if (!token) return true;
+    
+    try {
+      const decoded = JSON.parse(atob(token.split('.')[1]));
+      const currentTime = Date.now() / 1000;
+      return decoded.exp < currentTime;
+    } catch (error) {
+      console.error('Error decoding token:', error);
+      return true;
     }
-    setLoading(false);
-  }, [token]);
+  };
+
+  // Enhanced logout function that can be called from anywhere
+  const logout = (redirectToLogin = true) => {
+    console.log('Logging out user...');
+    localStorage.removeItem('authToken');
+    setToken(null);
+    setUser(null);
+    setAuthError(null);
+    
+    if (redirectToLogin && window.location.pathname !== '/login' && window.location.pathname !== '/register') {
+      window.location.href = '/login';
+    }
+  };
+
+  // Function to validate and refresh token if needed
+  const validateToken = async () => {
+    const storedToken = localStorage.getItem('authToken');
+    
+    if (!storedToken) {
+      setLoading(false);
+      return;
+    }
+
+    // Check if token is expired
+    if (isTokenExpired(storedToken)) {
+      console.log('Token is expired, logging out...');
+      logout();
+      setLoading(false);
+      return;
+    }
+
+    try {
+      // Set the token and decode user info
+      setToken(storedToken);
+      const decodedUser = JSON.parse(atob(storedToken.split('.')[1]));
+      setUser({ 
+        id: decodedUser.id, 
+        username: decodedUser.username || 'User', 
+        email: decodedUser.email 
+      });
+    } catch (error) {
+      console.error('Failed to decode token or token invalid:', error);
+      logout();
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    validateToken();
+  }, []);
+
+  // Listen for token expiration events from API interceptor
+  useEffect(() => {
+    const handleTokenExpiration = () => {
+      console.log('Token expiration event received');
+      logout(false); // Don't redirect immediately, let the API interceptor handle it
+    };
+
+    // Listen for custom events that might be dispatched from API interceptor
+    window.addEventListener('tokenExpired', handleTokenExpiration);
+    
+    return () => {
+      window.removeEventListener('tokenExpired', handleTokenExpiration);
+    };
+  }, []);
+
+  // Periodic token validation (check every 5 minutes)
+  useEffect(() => {
+    if (!token) return;
+
+    const checkTokenExpiration = () => {
+      if (isTokenExpired(token)) {
+        console.log('Token expired during periodic check, logging out...');
+        window.dispatchEvent(new CustomEvent('tokenExpired', {
+          detail: { message: 'Your session has expired due to inactivity. Please log in again.' }
+        }));
+      }
+    };
+
+    // Check immediately
+    checkTokenExpiration();
+
+    // Set up periodic check every 5 minutes
+    const interval = setInterval(checkTokenExpiration, 5 * 60 * 1000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [token, isTokenExpired]);
 
   const login = async (email, password) => {
     setAuthError(null);
@@ -63,15 +147,17 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const logout = () => {
-    localStorage.removeItem('authToken');
-    setToken(null);
-    setUser(null);
-    setAuthError(null);
-  };
-
   return (
-    <AuthContext.Provider value={{ user, token, loading, authError, login, register, logout }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      token, 
+      loading, 
+      authError, 
+      login, 
+      register, 
+      logout,
+      isTokenExpired 
+    }}>
       {children}
     </AuthContext.Provider>
   );

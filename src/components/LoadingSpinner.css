@@ -1,0 +1,129 @@
+.loading-spinner-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.loading-spinner {
+  position: relative;
+  display: inline-block;
+}
+
+.spinner-ring {
+  position: absolute;
+  border: 2px solid transparent;
+  border-radius: 50%;
+  animation: spin 1.2s linear infinite;
+}
+
+.spinner-ring:nth-child(1) {
+  width: 100%;
+  height: 100%;
+  border-top-color: currentColor;
+  animation-delay: 0s;
+}
+
+.spinner-ring:nth-child(2) {
+  width: 80%;
+  height: 80%;
+  top: 10%;
+  left: 10%;
+  border-right-color: currentColor;
+  animation-delay: 0.2s;
+}
+
+.spinner-ring:nth-child(3) {
+  width: 60%;
+  height: 60%;
+  top: 20%;
+  left: 20%;
+  border-bottom-color: currentColor;
+  animation-delay: 0.4s;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Size variants */
+.spinner-small .loading-spinner {
+  width: 24px;
+  height: 24px;
+}
+
+.spinner-medium .loading-spinner {
+  width: 32px;
+  height: 32px;
+}
+
+.spinner-large .loading-spinner {
+  width: 48px;
+  height: 48px;
+}
+
+.spinner-xl .loading-spinner {
+  width: 64px;
+  height: 64px;
+}
+
+/* Color variants */
+.spinner-primary {
+  color: var(--color-primary);
+}
+
+.spinner-secondary {
+  color: var(--color-text-secondary);
+}
+
+.spinner-success {
+  color: var(--color-success);
+}
+
+.spinner-accent {
+  color: var(--color-accent);
+}
+
+.loading-text {
+  font-size: 0.9em;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+  text-align: center;
+}
+
+/* Pulse animation for text */
+.loading-text {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .spinner-large .loading-spinner {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .spinner-xl .loading-spinner {
+    width: 56px;
+    height: 56px;
+  }
+  
+  .loading-text {
+    font-size: 0.85em;
+  }
+} 

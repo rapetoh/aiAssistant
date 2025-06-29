@@ -16,7 +16,7 @@ if (!fs.existsSync(uploadsDir)) {
 export const getMatchResult = async (req, res) => {
   let filePath = '';
   try {
-    const { jobDescription } = req.body;
+    const { jobDescription, timestamp } = req.body;
     const resumeFile = req.file;
 
     if (!resumeFile) {
@@ -28,8 +28,8 @@ export const getMatchResult = async (req, res) => {
 
     let resumeText = '';
     // Save file to disk first
-    const timestamp = Date.now();
-    const fileName = `${timestamp}-${resumeFile.originalname}`;
+    const fileTimestamp = timestamp || Date.now();
+    const fileName = `${fileTimestamp}-${resumeFile.originalname}`;
     filePath = path.join(uploadsDir, fileName);
     fs.writeFileSync(filePath, resumeFile.buffer);
 
@@ -59,7 +59,8 @@ export const getMatchResult = async (req, res) => {
       fs.unlinkSync(filePath);
     }
 
-    const analysis = await aiService.generateMatchAnalysis(resumeText, jobDescription);
+    // Pass timestamp to AI service for cache busting
+    const analysis = await aiService.generateMatchAnalysis(resumeText, jobDescription, timestamp);
     res.status(200).json(analysis);
   } catch (error) {
     // Clean up the file if there's an error

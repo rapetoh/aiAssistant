@@ -48,13 +48,13 @@ export const chatService = {
               const data = JSON.parse(line.slice(6));
               if (data.chunk) {
                 fullResponseContent += data.chunk;
-                onChunk(data.chunk);
+                if (typeof onChunk === 'function') onChunk(data.chunk);
               }
               if (data.done) {
-                onDone(fullResponseContent);
+                if (typeof onDone === 'function') onDone(fullResponseContent);
               }
               if (data.error) {
-                onError(data.error);
+                if (typeof onError === 'function') onError(data.error);
               }
             } catch (e) {
               console.error('Error parsing SSE data:', e);
@@ -63,7 +63,7 @@ export const chatService = {
         }
       }
     } catch (error) {
-      onError(error.message);
+      if (typeof onError === 'function') onError(error.message);
     }
   },
 
