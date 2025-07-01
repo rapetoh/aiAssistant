@@ -249,7 +249,7 @@
 }
 
 .mobile-menu-button:hover {
-  color: var(--color-primary);
+  color: var(--color-primary); /* */
   background: var(--color-primary-hover);
 }
 
