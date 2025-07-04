@@ -27,3 +27,11 @@ dist-ssr
 .env
 .env.local
 .env.*.local
+
+
+node_modules/
+dist/
+build/
+uploads/
+*.log
+*.env

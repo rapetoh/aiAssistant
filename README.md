@@ -28,7 +28,7 @@ An intelligent chat assistant that provides context-aware responses based on you
    ```
 3. Create a `.env` file in the root directory with the following variables:
    ```
-   REMOVED=your_openai_api_key
+   OPENAI_API_KEY=your_openai_api_key
    MONGODB_URI=your_mongodb_uri
    ```
 4. Start the development server:
