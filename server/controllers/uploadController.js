@@ -59,10 +59,16 @@ export const handleFileUpload = (req, res, next) => {
 
 // Controller function to process the uploaded file
 export const uploadFile = async (req, res) => {
-  let filePath = ''; // Define filePath in the broader scope
+  let filePath = '';
   try {
     if (!req.file) {
       return res.status(400).json({ message: 'No file uploaded' });
+    }
+
+    // ENFORCE ONLY ONE DOCUMENT PER USER
+    const existingDoc = await Document.findOne({ user: req.user.id });
+    if (existingDoc) {
+      return res.status(400).json({ message: 'You can only upload one document. Please delete your existing document before uploading a new one.' });
     }
 
     const file = req.file;
@@ -89,9 +95,9 @@ export const uploadFile = async (req, res) => {
         // Combine text from all pages
         content = data.pages.map(page => page.content.map(item => item.str).join(' ')).join('\n');
 
-        // If text extraction is empty, fallback to page count
-        if (!content.trim()) {
-          content = `PDF with ${pageCount} pages (No extractable text found)`;
+        // If text extraction is empty or too short, return error
+        if (!content.trim() || content.trim().length < 30) {
+          return res.status(400).json({ message: 'Could not extract text from your PDF. Please upload a text-based PDF or a .txt file.' });
         }
       } catch (error) {
         console.error('Error processing PDF:', error);
@@ -101,10 +107,13 @@ export const uploadFile = async (req, res) => {
           message: error.message,
           stack: error.stack
         });
-        content = `Error processing PDF file: ${error.message}`;
+        return res.status(400).json({ message: 'Could not extract text from your PDF. Please upload a text-based PDF or a .txt file.' });
       }
     } else if (file.mimetype === 'text/plain') {
       content = file.buffer.toString('utf-8');
+      if (!content.trim() || content.trim().length < 30) {
+        return res.status(400).json({ message: 'Text file appears to be empty or too short. Please upload a valid resume.' });
+      }
     } else {
       // This case should ideally not be hit due to fileFilter, but as a safeguard:
       return res.status(400).json({ message: 'Unsupported file type' });

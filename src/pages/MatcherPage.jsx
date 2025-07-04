@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import {
   Box,
   Heading,
@@ -17,9 +17,14 @@ import {
   GridItem,
   useColorModeValue,
   useColorMode,
+  RadioGroup,
+  Radio,
+  Stack,
+  Spinner,
 } from '@chakra-ui/react';
 import { FiUploadCloud } from 'react-icons/fi';
 import { matcherService } from '../services/matcherService';
+import { documentService } from '../services/documentService';
 import { CircularProgressbarWithChildren, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -47,6 +52,9 @@ const MatcherPage = () => {
   const [isCachedResult, setIsCachedResult] = useState(false);
   const [analysisCount, setAnalysisCount] = useState(0);
   const fileInputRef = useRef(null);
+  const [resumeSource, setResumeSource] = useState('current'); // 'current' or 'upload'
+  const [currentDoc, setCurrentDoc] = useState(null);
+  const [docLoading, setDocLoading] = useState(false);
 
   // Color mode aware values
   const pageBg = useColorModeValue('gray.50', 'gray.900');
@@ -66,10 +74,33 @@ const MatcherPage = () => {
   const textareaPlaceholder = useColorModeValue('gray.400', 'gray.400');
   const { colorMode } = useColorMode();
 
+  useEffect(() => {
+    if (resumeSource === 'current') {
+      setDocLoading(true);
+      documentService.getDocuments().then(docs => {
+        setCurrentDoc(docs && docs.length > 0 ? docs[0] : null);
+        setDocLoading(false);
+      }).catch(() => {
+        setCurrentDoc(null);
+        setDocLoading(false);
+      });
+    }
+  }, [resumeSource]);
+
   const handleMatch = async (forceReanalyze = false) => {
-    if (!resumeFile) {
-      setError('Please upload a resume file.');
-      return;
+    let resumeInput;
+    if (resumeSource === 'current') {
+      if (!currentDoc || !currentDoc.content) {
+        setError('No current document found. Please upload a document first.');
+        return;
+      }
+      resumeInput = currentDoc.content;
+    } else {
+      if (!resumeFile) {
+        setError('Please upload a resume file.');
+        return;
+      }
+      resumeInput = resumeFile;
     }
     setIsLoading(true);
     setError(null);
@@ -79,7 +110,7 @@ const MatcherPage = () => {
     try {
       // Add a timestamp parameter to force re-analysis if requested
       const analysis = await matcherService.getMatchAnalysis(
-        resumeFile, 
+        resumeInput, 
         jobDescription, 
         forceReanalyze ? Date.now() : undefined
       );
@@ -160,47 +191,64 @@ const MatcherPage = () => {
         p={{ base: '1rem', md: '2rem' }}
         style={{ maxWidth: '100vw', overflowX: 'auto' }}
       >
-        {/* Upload Resume */}
+        {/* Resume Source Selection */}
         <GridItem colSpan={{ base: 1, md: 1 }} rowSpan={1}>
           <div style={{ width: '100%', maxWidth: '100%', boxSizing: 'border-box', height: '100%', backgroundColor: 'var(--color-card)', borderRadius: '1rem', boxShadow: '0 2px 12px 0 rgba(31, 38, 135, 0.10)', padding: '1.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', gap: '1rem', wordBreak: 'break-word', overflowWrap: 'anywhere' }}>
-            <h2 style={{ fontWeight: 'bold', marginBottom: '0.5rem', textAlign: 'left', width: '100%' }}>Upload Resume</h2>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', width: '100%' }}>
-              <Box
-                as="button"
-                p={0}
-                border="none"
-                bg="none"
-                onClick={() => fileInputRef.current.click()}
-                _hover={{ opacity: 0.8 }}
-                cursor="pointer"
-              >
-                <Center
-                  borderWidth="2px"
-                  borderRadius="md"
-                  borderStyle="dashed"
-                  borderColor={isDragging ? 'teal.400' : useColorModeValue('gray.300', 'gray.600')}
-                  bg={isDragging ? 'teal.50' : 'var(--color-bg-alt)'}
-                  w="44px"
-                  h="44px"
-                  onDrop={handleDrop}
-                  onDragOver={handleDragOver}
-                  onDragEnter={handleDragEnter}
-                  onDragLeave={handleDragLeave}
+            <h2 style={{ fontWeight: 'bold', marginBottom: '0.5rem', textAlign: 'left', width: '100%' }}>Resume Source</h2>
+            <RadioGroup value={resumeSource} onChange={setResumeSource} mb={2}>
+              <Stack direction="column" spacing={2}>
+                <Radio value="current">Use my current uploaded document</Radio>
+                <Radio value="upload">Upload a new resume for this match</Radio>
+              </Stack>
+            </RadioGroup>
+            {resumeSource === 'current' && (
+              docLoading ? (
+                <Flex align="center" gap={2}><Spinner size="sm" /> Loading your document...</Flex>
+              ) : currentDoc ? (
+                <Text color={subTextColor} fontSize="sm" fontWeight="medium">Using: <b>{currentDoc.title}</b></Text>
+              ) : (
+                <Text color={errorColor} fontSize="sm">No document found. Please upload one in the Documents section.</Text>
+              )
+            )}
+            {resumeSource === 'upload' && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', width: '100%' }}>
+                <Box
+                  as="button"
+                  p={0}
+                  border="none"
+                  bg="none"
+                  onClick={() => fileInputRef.current.click()}
+                  _hover={{ opacity: 0.8 }}
+                  cursor="pointer"
                 >
-                  <input
-                    type="file"
-                    ref={fileInputRef}
-                    onChange={handleFileChange}
-                    style={{ display: 'none' }}
-                    accept=".pdf,.doc,.docx"
-                  />
-                  <Icon as={FiUploadCloud} boxSize={7} color="teal.400" />
-                </Center>
-              </Box>
-              <Text color={subTextColor} fontWeight="medium" fontSize="sm" textAlign="left">
-                {resumeFile ? `Selected: ${resumeFile.name}` : 'Click or drag & drop your resume'}
-              </Text>
-            </div>
+                  <Center
+                    borderWidth="2px"
+                    borderRadius="md"
+                    borderStyle="dashed"
+                    borderColor={isDragging ? 'teal.400' : useColorModeValue('gray.300', 'gray.600')}
+                    bg={isDragging ? 'teal.50' : 'var(--color-bg-alt)'}
+                    w="44px"
+                    h="44px"
+                    onDrop={handleDrop}
+                    onDragOver={handleDragOver}
+                    onDragEnter={handleDragEnter}
+                    onDragLeave={handleDragLeave}
+                  >
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      onChange={handleFileChange}
+                      style={{ display: 'none' }}
+                      accept=".pdf,.doc,.docx"
+                    />
+                    <Icon as={FiUploadCloud} boxSize={7} color="teal.400" />
+                  </Center>
+                </Box>
+                <Text color={subTextColor} fontWeight="medium" fontSize="sm" textAlign="left">
+                  {resumeFile ? `Selected: ${resumeFile.name}` : 'Click or drag & drop your resume'}
+                </Text>
+              </div>
+            )}
           </div>
         </GridItem>
 
@@ -230,7 +278,11 @@ const MatcherPage = () => {
               onClick={() => handleMatch()}
               isLoading={isLoading}
               loadingText="Analyzing..."
-              disabled={!resumeFile || !jobDescription || isLoading}
+              disabled={
+                isLoading ||
+                !jobDescription ||
+                (resumeSource === 'current' ? (!currentDoc || !currentDoc.content) : !resumeFile)
+              }
               mt={1}
             >
               {isLoading ? (
@@ -263,8 +315,11 @@ const MatcherPage = () => {
               </div>
             )}
 
+            {/* Show backend error messages clearly */}
             {error && (
-              <Text color={errorColor} mt={2} fontWeight="bold" fontSize="sm">{error}</Text>
+              <Box mt={3} p={3} bg="red.50" borderRadius="md" border="1px solid" borderColor="red.200">
+                <Text color={errorColor} fontWeight="bold" fontSize="sm">{error}</Text>
+              </Box>
             )}
           </div>
         </GridItem>

@@ -41,7 +41,11 @@ const DocumentsPage = () => {
       await fetchDocuments(); // Refresh the list
       alert('Document uploaded successfully!');
     } catch (err) {
-      setUploadError('Failed to upload document.');
+      setUploadError(
+        err?.response?.data?.message ||
+        err?.message ||
+        'Failed to upload document.'
+      );
       console.error('Error uploading document:', err);
     } finally {
       setUploading(false);
@@ -68,6 +72,11 @@ const DocumentsPage = () => {
     <div className="documents-page-container">
       <h1 className="documents-page-title">Your Documents</h1>
       <div className="upload-section">
+        {documents.length >= 1 && (
+          <p className="upload-error-message" style={{ color: '#FF8800', fontWeight: 600, marginBottom: 8 }}>
+            You can only upload one document. Please delete your existing document to upload a new one.
+          </p>
+        )}
         <label htmlFor="file-upload" className="upload-button">
           {uploading ? 'Uploading...' : 'Upload New Document'}
         </label>
@@ -76,11 +85,15 @@ const DocumentsPage = () => {
           type="file"
           ref={fileInputRef}
           onChange={handleFileUpload}
-          disabled={uploading}
+          disabled={uploading || documents.length >= 1}
           accept=".pdf,.txt"
           style={{ display: 'none' }}
         />
-        {uploadError && <p className="upload-error-message">{uploadError}</p>}
+        {uploadError && (
+          <div style={{ background: '#FFF5F5', border: '1px solid #FEB2B2', color: '#C53030', padding: 12, borderRadius: 8, marginTop: 8, fontWeight: 600 }}>
+            {uploadError}
+          </div>
+        )}
       </div>
       {loading && <p className="loading-message">Loading documents...</p>}
       {error && <p className="error-message">{error}</p>}
