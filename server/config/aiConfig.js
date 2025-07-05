@@ -23,7 +23,7 @@ export const AI_CONFIG = {
   cohere: {
     baseUrl: 'https://api.cohere.com/v2/chat',
     enabled: true,
-    apiKey: 'Bearer SI5IpGRsTJtMREJyQpfhlvM4ceY0bDvyxuRt28Nc', // Replace this with your actual OpenAI API key
+    apiKey: process.env.API_KEY, // Replace this with your actual OpenAI API key
     model: 'command-a-03-2025',
     temperature: 0.7,
   }
