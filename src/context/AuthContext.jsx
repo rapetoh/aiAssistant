@@ -27,6 +27,7 @@ export const AuthProvider = ({ children }) => {
   const logout = (redirectToLogin = true) => {
     console.log('Logging out user...');
     localStorage.removeItem('authToken');
+    localStorage.removeItem('userData');
     setToken(null);
     setUser(null);
     setAuthError(null);
@@ -39,6 +40,7 @@ export const AuthProvider = ({ children }) => {
   // Function to validate and refresh token if needed
   const validateToken = async () => {
     const storedToken = localStorage.getItem('authToken');
+    const storedUserData = localStorage.getItem('userData');
     
     if (!storedToken) {
       setLoading(false);
@@ -54,14 +56,22 @@ export const AuthProvider = ({ children }) => {
     }
 
     try {
-      // Set the token and decode user info
+      // Set the token
       setToken(storedToken);
-      const decodedUser = JSON.parse(atob(storedToken.split('.')[1]));
-      setUser({ 
-        id: decodedUser.id, 
-        username: decodedUser.username || 'User', 
-        email: decodedUser.email 
-      });
+      
+      // Restore user data from localStorage
+      if (storedUserData) {
+        const userData = JSON.parse(storedUserData);
+        setUser(userData);
+      } else {
+        // Fallback: try to decode user info from token (now includes username)
+        const decodedUser = JSON.parse(atob(storedToken.split('.')[1]));
+        setUser({ 
+          id: decodedUser.id, 
+          username: decodedUser.username || 'User', // Now username is in token
+          email: decodedUser.email || 'user@example.com'
+        });
+      }
     } catch (error) {
       console.error('Failed to decode token or token invalid:', error);
       logout();
@@ -119,6 +129,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const data = await authService.login(email, password);
       localStorage.setItem('authToken', data.token);
+      localStorage.setItem('userData', JSON.stringify(data.user));
       setToken(data.token);
       setUser(data.user);
       setLoading(false);
@@ -136,6 +147,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const data = await authService.register(username, email, password);
       localStorage.setItem('authToken', data.token);
+      localStorage.setItem('userData', JSON.stringify(data.user));
       setToken(data.token);
       setUser(data.user);
       setLoading(false);
@@ -147,6 +159,11 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Function to check if user is authenticated
+  const isAuthenticated = () => {
+    return !!token && !!user && !isTokenExpired(token);
+  };
+
   return (
     <AuthContext.Provider value={{ 
       user, 
@@ -156,7 +173,8 @@ export const AuthProvider = ({ children }) => {
       login, 
       register, 
       logout,
-      isTokenExpired 
+      isTokenExpired,
+      isAuthenticated
     }}>
       {children}
     </AuthContext.Provider>

@@ -15,8 +15,12 @@ export const register = async (req, res) => {
     const user = new User({ username, email, password });
     await user.save();
 
-    // Generate JWT token
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    // Generate JWT token with user data
+    const token = jwt.sign({ 
+      id: user._id, 
+      username: user.username, 
+      email: user.email 
+    }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
     res.status(201).json({ message: 'User registered successfully', user: { id: user._id, username: user.username, email: user.email }, token });
   } catch (error) {
@@ -41,8 +45,12 @@ export const login = async (req, res) => {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
-    // Generate JWT token
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    // Generate JWT token with user data
+    const token = jwt.sign({ 
+      id: user._id, 
+      username: user.username, 
+      email: user.email 
+    }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
     res.status(200).json({ message: 'Logged in successfully', user: { id: user._id, username: user.username, email: user.email }, token });
   } catch (error) {
