@@ -10,7 +10,10 @@ import dotenv from 'dotenv';
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: ['https://aiassistant-backend-webservice.onrender.com/', 'https://ai-assistant-three-eta.vercel.app/'],
+  credentials: true, // if you use cookies or authorization headers
+}));
 app.use(express.json());
 
 // Routes
