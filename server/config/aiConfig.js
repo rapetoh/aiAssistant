@@ -8,7 +8,7 @@ const __dirname = dirname(__filename);
 // Go up one level from config to server directory
 const serverDir = join(__dirname, '..');
 
-const apikey = 'Bearer ' + process.env.API_KEY;
+const apikey = process.env.API_KEY;
 
 console.log('API_KEY:', process.env.API_KEY);
 
