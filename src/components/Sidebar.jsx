@@ -4,6 +4,7 @@ import './Sidebar.css';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
 import { Tooltip } from '@chakra-ui/react';
+import CreateChatModal from './CreateChatModal';
 
 // Media query hook for desktop detection
 function useIsDesktop() {
@@ -37,19 +38,17 @@ const Sidebar = ({
   onChatCreate,
   onChatDelete
 }) => {
-  const [isCreatingChat, setIsCreatingChat] = useState(false);
-  const [newChatTitle, setNewChatTitle] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isCreateChatModalOpen, setIsCreateChatModalOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
   const { user, logout } = useAuth(); // Use auth context
   const navigate = useNavigate();
   const isDesktop = useIsDesktop();
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
-  const handleCreateChat = async (e) => {
-    e.preventDefault();
-    console.log('Sidebar: Attempting to create chat with title:', newChatTitle);
-    if (!newChatTitle.trim()) {
+  const handleCreateChat = async (title) => {
+    console.log('Sidebar: Attempting to create chat with title:', title);
+    if (!title.trim()) {
       console.log('Sidebar: New chat title is empty.');
       return;
     }
@@ -57,10 +56,8 @@ const Sidebar = ({
     try {
       if (onChatCreate) {
         console.log('Sidebar: Calling onChatCreate prop...');
-        const chat = await onChatCreate(newChatTitle);
+        const chat = await onChatCreate(title);
         console.log('Sidebar: Chat created via prop, response:', chat);
-        setNewChatTitle('');
-        setIsCreatingChat(false);
         if (chat && chat._id) {
           console.log('Sidebar: Navigating to new chat:', `/chat/${chat._id}`);
           navigate(`/chat/${chat._id}`);
@@ -69,6 +66,7 @@ const Sidebar = ({
       }
     } catch (error) {
       console.error('Sidebar: Error creating chat:', error);
+      throw error; // Re-throw so the modal can handle the error
     }
   };
 
@@ -80,6 +78,14 @@ const Sidebar = ({
 
   const handleNavClick = () => {
     setIsMobileMenuOpen(false); // Close mobile menu when a nav item is clicked
+  };
+
+  const openCreateChatModal = () => {
+    setIsCreateChatModalOpen(true);
+  };
+
+  const closeCreateChatModal = () => {
+    setIsCreateChatModalOpen(false);
   };
 
   // Chevron icon for collapse/expand
@@ -165,7 +171,7 @@ const Sidebar = ({
                 {user && !isSidebarCollapsed && (
                   <button
                     className="new-chat-button"
-                    onClick={() => setIsCreatingChat(true)}
+                    onClick={openCreateChatModal}
                   >
                     <ChatIcon /> New Chat
                   </button>
@@ -197,24 +203,6 @@ const Sidebar = ({
               <SettingsIcon /> Settings
             </NavLink>
           </nav>
-        )}
-
-        {!showCollapsed && isCreatingChat && (
-          <form onSubmit={handleCreateChat} className="new-chat-form">
-            <input
-              type="text"
-              value={newChatTitle}
-              onChange={(e) => setNewChatTitle(e.target.value)}
-              placeholder="Enter chat title..."
-              autoFocus
-            />
-            <div className="new-chat-buttons">
-              <button type="submit">Create</button>
-              <button type="button" onClick={() => setIsCreatingChat(false)}>
-                Cancel
-              </button>
-            </div>
-          </form>
         )}
 
         {!showCollapsed && user && (
@@ -295,7 +283,7 @@ const Sidebar = ({
               <button
                 className="mobile-new-chat-button"
                 onClick={() => {
-                  setIsCreatingChat(true);
+                  openCreateChatModal();
                   setIsMobileMenuOpen(false);
                 }}
               >
@@ -349,6 +337,13 @@ const Sidebar = ({
           )}
         </div>
       </div>
+
+      {/* Create Chat Modal */}
+      <CreateChatModal
+        isOpen={isCreateChatModalOpen}
+        onClose={closeCreateChatModal}
+        onCreateChat={handleCreateChat}
+      />
     </>
   );
 };
