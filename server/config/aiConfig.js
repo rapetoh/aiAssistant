@@ -1,11 +1,16 @@
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import 'dotenv/config'; // or require('dotenv').config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 // Go up one level from config to server directory
 const serverDir = join(__dirname, '..');
+
+const apikey = 'Bearer ' + process.env.API_KEY;
+
+console.log('API_KEY:', process.env.API_KEY);
 
 export const AI_CONFIG = {
   // Default AI provider (can be 'local' or 'openai')
@@ -23,7 +28,8 @@ export const AI_CONFIG = {
   cohere: {
     baseUrl: 'https://api.cohere.com/v2/chat',
     enabled: true,
-    apiKey: process.env.API_KEY, // Replace this with your actual OpenAI API key
+    // Use the raw API key from the environment variable; do NOT include 'Bearer' here
+    apiKey: apikey,
     model: 'command-a-03-2025',
     temperature: 0.7,
   }
