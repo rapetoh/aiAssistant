@@ -98,7 +98,7 @@ const Sidebar = ({
           {/* Username at the very top, its own row */}
           {!showCollapsed && (
             <div className="sidebar-username">
-              {user && user.username ? user.username : 'Roch'}
+              {user && user.username ? user.username+' & SmartMate' : 'SmartMate'}
             </div>
           )}
           {/* Action buttons row */}
