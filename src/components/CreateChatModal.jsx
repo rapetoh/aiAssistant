@@ -41,7 +41,9 @@ const CreateChatModal = ({ isOpen, onClose, onCreateChat }) => {
             ×
           </button>
         </div>
-        
+        <div className="create-chat-modal-notice">
+          <strong>Tip:</strong> You can upload a pdf file in the <b>Documents</b> section and discuss it with SmartMate in your chats!
+        </div>
         <form onSubmit={handleSubmit} className="create-chat-modal-form">
           <div className="create-chat-modal-input-group">
             <label htmlFor="chat-title">Chat Title</label>

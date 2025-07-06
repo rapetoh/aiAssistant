@@ -3,6 +3,7 @@ import { chatService } from '../services/chatService';
 import './Chat.css';
 import { marked } from 'marked'; // For rendering markdown
 import LoadingSpinner from './LoadingSpinner';
+import { Link } from 'react-router-dom';
 
 const Spinner = () => (
   <div className="spinner-container">
@@ -204,6 +205,10 @@ const Chat = ({ chatId, chatTitle }) => {
         <div ref={messagesEndRef} />
       </div>
 
+      {/* Integrated Tip Line above input */}
+      <div className="chat-input-tip-line">
+        <span className="chat-input-tip-label">Tip:</span> You can <b >&nbsp;upload a file&nbsp;</b> in the <Link to="/documents" className="chat-input-tip-link">Documents</Link> section and chat about it here!
+      </div>
       <form onSubmit={handleSubmit} className="input-form">
         <input
           type="text"
