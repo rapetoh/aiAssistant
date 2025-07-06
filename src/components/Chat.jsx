@@ -210,7 +210,7 @@ const Chat = ({ chatId, chatTitle }) => {
         <span className="chat-input-tip-label">Tip:</span> You can <b >&nbsp;upload a file&nbsp;</b> in the <Link to="/documents" className="chat-input-tip-link">Documents</Link> section and chat about it here!
       </div>
       <form onSubmit={handleSubmit} className="input-form">
-        <input
+        < input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}

@@ -11,9 +11,9 @@ export const authService = {
     }
   },
 
-  login: async (email, password) => {
+  login: async (email, password, rememberMe = false) => {
     try {
-      const response = await api.post('/auth/login', { email, password });
+      const response = await api.post('/auth/login', { email, password, rememberMe });
       return response.data;
     } catch (error) {
       console.error('Error during login:', error.response?.data || error.message);

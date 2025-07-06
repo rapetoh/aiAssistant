@@ -31,7 +31,7 @@ export const register = async (req, res) => {
 // Login user
 export const login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, rememberMe } = req.body;
 
     // Check if user exists
     const user = await User.findOne({ email });
@@ -45,12 +45,15 @@ export const login = async (req, res) => {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
+    // Set expiry based on rememberMe
+    const expiresIn = rememberMe ? '7d' : '1h';
+
     // Generate JWT token with user data
     const token = jwt.sign({ 
       id: user._id, 
       username: user.username, 
       email: user.email 
-    }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    }, process.env.JWT_SECRET, { expiresIn });
 
     res.status(200).json({ message: 'Logged in successfully', user: { id: user._id, username: user.username, email: user.email }, token });
   } catch (error) {
