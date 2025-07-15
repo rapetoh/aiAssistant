@@ -55,7 +55,7 @@ export const AuthProvider = ({ children }) => {
       return;
     }
 
-    try {
+      try {
       // Set the token
       setToken(storedToken);
       

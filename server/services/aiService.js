@@ -180,15 +180,43 @@ class AIService {
       const aiPrompt = `You are a resume/job matcher assistant. Given the following resume and job description, and a pre-calculated match score (${matchScore}%), extract and return a JSON object with these fields:
 
 {
+  "name": "Full name of the candidate from the resume",
+  "role": "Current or most recent job title from the resume",
   "jobKeywords": ["keyword1", "keyword2", ...],
   "jobSkills": ["skill1", "skill2", ...],
   "missingSkills": ["skill1", ...],
   "missingExperience": ["experience1", ...],
   "summary": "2-3 sentence summary of the match",
   "improvementSuggestions": ["suggestion1", ...],
-  "whatMattersMost": "Top 1-3 critical requirements for this role"
+  "whatMattersMost": "Top 1-3 critical requirements for this role",
+  "interviewQuestions": {
+    "behavioral": [
+      {
+        "question": "Question text here",
+        "responseGuide": {
+          "framework": "STAR Method",
+          "structure": ["Situation: Set the context", "Task: Describe your responsibility", "Action: Detail your actions", "Result: Share the outcome"],
+          "keyPoints": ["Point 1", "Point 2", "Point 3"],
+          "examplePhrases": ["I was responsible for...", "The challenge was...", "I approached this by...", "The result was..."]
+        }
+      }
+    ],
+    "technical": [
+      {
+        "question": "Question text here", 
+        "responseGuide": {
+          "framework": "Systematic Approach",
+          "structure": ["Step 1: Describe your process", "Step 2: Explain your methodology", "Step 3: Share your solution", "Step 4: Discuss the outcome"],
+          "keyPoints": ["Point 1", "Point 2", "Point 3"],
+          "examplePhrases": ["I typically start by...", "My approach involves...", "I use tools like...", "The outcome was..."]
+        }
+      }
+    ]
+  }
 }
 
+- name: Extract the candidate's full name from the resume.
+- role: Extract the current or most recent job title from the resume.
 - jobKeywords: The 6 most relevant, non-generic keywords from the job description (no stopwords, no generic words like 'with', 'and', 'the', etc). ALWAYS return at least 6.
 - jobSkills: The 6 most important skills required for the job. ALWAYS return at least 6.
 - missingSkills: Skills required by the job but not found in the resume.
@@ -196,6 +224,7 @@ class AIService {
 - summary: A concise, professional summary of the match.
 - improvementSuggestions: 3-5 actionable ways the candidate can improve their match.
 - whatMattersMost: 1-2 sentences on the most critical requirements for this job.
+- interviewQuestions: Generate exactly 10 behavioral questions and 10 technical questions with detailed response guides. For behavioral questions, use STAR method framework. For technical questions, use Systematic Approach framework. Each response guide should include framework name, 4-step structure, 3 key points to emphasize, and 4 example phrases to use.
 
 If you cannot find 6 keywords or skills, make your best guess based on the job description. Never return empty arrays for jobKeywords or jobSkills.
 
@@ -258,6 +287,8 @@ Return ONLY a valid JSON object with all fields filled in. Do not include any ex
       // Compose the final result: use AI for all fields except matchScore
       const result = {
         matchScore,
+        name: aiFields.name || '',
+        role: aiFields.role || '',
         // For frontend: jobKeywords as array of {word}
         jobKeywords: (aiFields.jobKeywords || []).map(word => ({ word })),
         // For frontend: skills as array of {name, type, status, highlight}
@@ -274,6 +305,11 @@ Return ONLY a valid JSON object with all fields filled in. Do not include any ex
         summary: aiFields.summary || '',
         improvementSuggestions: aiFields.improvementSuggestions || [],
         whatMattersMost: aiFields.whatMattersMost || '',
+        // Interview questions
+        interviewQuestions: aiFields.interviewQuestions || {
+          behavioral: [],
+          technical: []
+        },
         // For compatibility with frontend, also include these:
         missingForPerfectMatch: [
           ...(aiFields.missingSkills || []).map(s => `Skill: ${s}`),
