@@ -29,7 +29,7 @@ export const AI_CONFIG = {
     baseUrl: 'https://api.cohere.com/v2/chat',
     enabled: true,
     // Use the raw API key from the environment variable; do NOT include 'Bearer' here
-    apiKey: 'Bearer SI5IpGRsTJtMREJyQpfhlvM4ceY0bDvyxuRt28Nc',
+    apiKey: apikey,
     model: 'command-a-03-2025',
     temperature: 0.7,
   }
