@@ -139,7 +139,11 @@ const MatcherPage = () => {
       setAnalysisCount(prev => prev + 1);
       setIsCachedResult(!forceReanalyze && analysisCount > 0);
     } catch (err) {
-      setError(err.message || 'An unexpected error occurred.');
+      if (err && typeof err === 'object' && err.message) {
+        setError(err.message);
+      } else {
+        setError(err.toString() || 'An unexpected error occurred.');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -630,7 +634,11 @@ const MatcherPage = () => {
               {/* Show backend error messages clearly */}
               {error && (
                 <Box mt={3} p={3} bg="red.50" borderRadius="md" border="1px solid" borderColor="red.200">
-                  <Text fontWeight="bold" fontSize="sm">{error}</Text>
+                  <Text fontWeight="bold" fontSize="sm">
+                    {error.includes('does not appear to be a real job description')
+                      ? '🚫 The text you entered does not appear to be a real job description. Please paste a valid job posting.'
+                      : error}
+                  </Text>
                 </Box>
               )}
             </div>

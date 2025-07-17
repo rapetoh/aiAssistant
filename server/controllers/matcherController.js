@@ -75,6 +75,7 @@ export const getMatchResult = async (req, res) => {
       fs.unlinkSync(filePath);
     }
     console.error('Error in getMatchResult:', error);
-    res.status(500).json({ message: 'Error generating match result.', error: error.message });
+    const message = error && error.message ? error.message : 'Error generating match result.';
+    res.status(400).json({ message });
   }
 }; 

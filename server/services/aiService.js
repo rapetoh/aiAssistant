@@ -212,7 +212,8 @@ class AIService {
         }
       }
     ]
-  }
+  },
+  "isJobDescriptionValid": true if the job description is a real job posting, false otherwise
 }
 
 - name: Extract the candidate's full name from the resume.
@@ -275,6 +276,11 @@ Return ONLY a valid JSON object with all fields filled in. Do not include any ex
       }
 
       const aiFields = JSON.parse(jsonMatch[0]);
+
+      // New: Check job description validity
+      if (aiFields.isJobDescriptionValid === false || aiFields.isJobDescriptionValid === 'false') {
+        throw new Error('The provided job description does not appear to be a real job description. Please provide a valid job posting.');
+      }
 
       // Fallback: Ensure at least 6 keywords and 6 skills
       if (!Array.isArray(aiFields.jobKeywords) || aiFields.jobKeywords.length < 6) {
