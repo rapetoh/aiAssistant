@@ -189,6 +189,33 @@ class AIService {
   "summary": "2-3 sentence summary of the match",
   "improvementSuggestions": ["suggestion1", ...],
   "whatMattersMost": "Top 1-3 critical requirements for this role",
+  "resumeImprovements": {
+    "summary": {
+      "needsImprovement": true/false,
+      "specificAdvice": "Specific advice based on the actual resume content and job requirements",
+      "example": "Example of how to improve this section"
+    },
+    "experience": {
+      "needsImprovement": true/false,
+      "specificAdvice": "Specific advice based on the actual experience section and job requirements",
+      "example": "Example of how to improve this section"
+    },
+    "skills": {
+      "needsImprovement": true/false,
+      "specificAdvice": "Specific advice based on the actual skills section and job requirements",
+      "example": "Example of how to improve this section"
+    },
+    "education": {
+      "needsImprovement": true/false,
+      "specificAdvice": "Specific advice based on the actual education section and job requirements",
+      "example": "Example of how to improve this section"
+    },
+    "projects": {
+      "needsImprovement": true/false,
+      "specificAdvice": "Specific advice based on the actual projects section and job requirements",
+      "example": "Example of how to improve this section"
+    }
+  },
   "interviewQuestions": {
     "behavioral": [
       {
@@ -225,6 +252,12 @@ class AIService {
 - summary: A concise, professional summary of the match.
 - improvementSuggestions: 3-5 actionable ways the candidate can improve their match.
 - whatMattersMost: 1-2 sentences on the most critical requirements for this job.
+- resumeImprovements: Analyze each resume section and provide personalized improvement advice. For each section:
+  * needsImprovement: true if the section needs changes to better match the job, false if it's already well-aligned
+  * specificAdvice: Concrete, actionable advice based on the actual content of that section and the job requirements
+  * example: A specific example of how to improve that section, tailored to the candidate's background and the job
+  * Only include sections that exist in the resume (if no projects section, omit it)
+  * Make advice specific to the candidate's actual experience and the job requirements, not generic advice
 - interviewQuestions: Generate exactly 10 behavioral questions and 10 technical questions with detailed response guides. For behavioral questions, use STAR method framework. For technical questions, use Systematic Approach framework. Each response guide should include framework name, 4-step structure, 3 key points to emphasize, and 4 example phrases to use.
 
 If you cannot find 6 keywords or skills, make your best guess based on the job description. Never return empty arrays for jobKeywords or jobSkills.
@@ -316,6 +349,8 @@ Return ONLY a valid JSON object with all fields filled in. Do not include any ex
           behavioral: [],
           technical: []
         },
+        // Resume improvement advice
+        resumeImprovements: aiFields.resumeImprovements || {},
         // For compatibility with frontend, also include these:
         missingForPerfectMatch: [
           ...(aiFields.missingSkills || []).map(s => `Skill: ${s}`),

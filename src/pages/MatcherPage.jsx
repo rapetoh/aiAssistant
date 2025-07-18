@@ -338,6 +338,58 @@ const MatcherPage = () => {
       doc.setFontSize(14);
     }
 
+    // Resume Improvements
+    if (result.resumeImprovements && Object.keys(result.resumeImprovements).length > 0) {
+      ensureSpace(2);
+      doc.text('Resume Improvement Suggestions:', left, y);
+      y += lineHeight;
+      doc.setFontSize(12);
+      
+      Object.entries(result.resumeImprovements).forEach(([section, advice]) => {
+        ensureSpace(2);
+        doc.setFontSize(13);
+        doc.text(`${section.charAt(0).toUpperCase() + section.slice(1)} Section:`, left + 10, y);
+        y += lineHeight;
+        doc.setFontSize(12);
+        
+        if (advice.needsImprovement) {
+          const statusLines = doc.splitTextToSize(`Status: Needs improvement`, maxTextWidth - 20);
+          ensureSpace(statusLines.length);
+          doc.text(statusLines, left + 20, y);
+          y += statusLines.length * lineHeight;
+          
+          if (advice.specificAdvice) {
+            const adviceLines = doc.splitTextToSize(`Advice: ${advice.specificAdvice}`, maxTextWidth - 20);
+            ensureSpace(adviceLines.length);
+            doc.text(adviceLines, left + 20, y);
+            y += adviceLines.length * lineHeight;
+          }
+          
+          if (advice.example) {
+            const exampleLines = doc.splitTextToSize(`Example: ${advice.example}`, maxTextWidth - 20);
+            ensureSpace(exampleLines.length);
+            doc.text(exampleLines, left + 20, y);
+            y += exampleLines.length * lineHeight;
+          }
+        } else {
+          const statusLines = doc.splitTextToSize(`Status: Well-aligned with job requirements`, maxTextWidth - 20);
+          ensureSpace(statusLines.length);
+          doc.text(statusLines, left + 20, y);
+          y += statusLines.length * lineHeight;
+          
+          if (advice.specificAdvice) {
+            const adviceLines = doc.splitTextToSize(`Note: ${advice.specificAdvice}`, maxTextWidth - 20);
+            ensureSpace(adviceLines.length);
+            doc.text(adviceLines, left + 20, y);
+            y += adviceLines.length * lineHeight;
+          }
+        }
+        y += 6;
+      });
+      y += sectionGap / 2;
+      doc.setFontSize(14);
+    }
+
     // Interview Questions
     if (result.interviewQuestions) {
       ensureSpace(2);
@@ -837,6 +889,104 @@ const MatcherPage = () => {
             </div>
           </GridItem>
         </Grid>
+
+        {/* Resume Improvements Section */}
+        {result && result.resumeImprovements && Object.keys(result.resumeImprovements).length > 0 && (
+          <Box
+            width="100%"
+            maxW="1600px"
+            mx="auto"
+            mt="2rem"
+            bg="var(--color-bg-alt)"
+            borderRadius="1.5rem"
+            boxShadow="0 4px 32px 0 rgba(31,38,135,0.10)"
+            p={{ base: '1rem', md: '2rem' }}
+          >
+            <Heading 
+              size="lg" 
+              mb={6} 
+              style={{ color: 'var(--color-text)' }}
+              textAlign="center"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              gap={3}
+            >
+              📝 Resume Improvement Suggestions
+            </Heading>
+            
+            <Grid templateColumns={{ base: '1fr', lg: '1fr 1fr' }} gap={6}>
+              {Object.entries(result.resumeImprovements).map(([section, advice]) => (
+                <Box
+                  key={section}
+                  p={6}
+                  bg="var(--color-card)"
+                  borderRadius="lg"
+                  border="1px solid"
+                  borderColor={advice.needsImprovement ? 'orange.300' : 'green.300'}
+                  boxShadow="sm"
+                >
+                  <Flex align="center" gap={3} mb={4}>
+                    <Tag 
+                      colorScheme={advice.needsImprovement ? 'orange' : 'green'} 
+                      size="md" 
+                      borderRadius="full"
+                      px={3}
+                    >
+                      {advice.needsImprovement ? '🔧 Needs Work' : '✅ Good'}
+                    </Tag>
+                    <Heading size="md" style={{ color: 'var(--color-text)' }} textTransform="capitalize">
+                      {section}
+                    </Heading>
+                  </Flex>
+                  
+                  {advice.needsImprovement ? (
+                    <Stack spacing={4}>
+                      <Box>
+                        <Text fontSize="sm" fontWeight="bold" color="orange.700" mb={2}>
+                          Specific Advice:
+                        </Text>
+                        <Text fontSize="sm" lineHeight="1.6" color="var(--color-text)">
+                          {advice.specificAdvice}
+                        </Text>
+                      </Box>
+                      
+                      {advice.example && (
+                        <Box>
+                          <Text fontSize="sm" fontWeight="bold" color="orange.700" mb={2}>
+                            Example Improvement:
+                          </Text>
+                          <Box 
+                            p={3} 
+                            bg="orange.50" 
+                            borderRadius="md" 
+                            border="1px solid" 
+                            borderColor="orange.200"
+                          >
+                            <Text fontSize="sm" color="orange.800" fontStyle="italic">
+                              {advice.example}
+                            </Text>
+                          </Box>
+                        </Box>
+                      )}
+                    </Stack>
+                  ) : (
+                    <Box>
+                      <Text fontSize="sm" color="green.700" fontWeight="medium">
+                        ✅ This section is well-aligned with the job requirements. Keep up the good work!
+                      </Text>
+                      {advice.specificAdvice && (
+                        <Text fontSize="sm" color="var(--color-text)" mt={2} lineHeight="1.6">
+                          {advice.specificAdvice}
+                        </Text>
+                      )}
+                    </Box>
+                  )}
+                </Box>
+              ))}
+            </Grid>
+          </Box>
+        )}
 
         {/* Interview Questions Section */}
         {result && result.interviewQuestions && (
