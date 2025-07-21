@@ -326,3 +326,34 @@
     border-width: 3px;
   }
 } 
+
+.chat-input-tip-line {
+  display: block;
+  background: #f8f9fb;
+  color: #3b2996;
+  font-size: 1rem;
+  border-radius: 1rem;
+  padding: 0.75rem 1.25rem;
+  margin-bottom: 0.5rem;
+  word-break: normal;
+  white-space: normal;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.chat-input-tip-label {
+  font-weight: bold;
+  margin-right: 0.25em;
+}
+
+@media (max-width: 600px) {
+  .chat-input-tip-line {
+    font-size: 0.97rem;
+    padding: 0.75rem 0.5rem;
+    width: 100%;
+    word-break: break-word;
+    white-space: normal;
+    border-radius: 0.8rem;
+    text-align: left;
+  }
+} 
