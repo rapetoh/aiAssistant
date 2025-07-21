@@ -8,8 +8,8 @@ const validateEmail = (email) => {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 };
 const validatePassword = (password) => {
-  // At least 8 chars, one letter, one number
-  return /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(password);
+  // At least 8 chars, one letter, one number, any character allowed
+  return /^(?=.*[A-Za-z])(?=.*\d).{8,}$/.test(password);
 };
 const validateUsername = (username) => {
   // At least 3 chars, only letters, numbers, underscores
