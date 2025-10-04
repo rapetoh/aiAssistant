@@ -11,7 +11,7 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: ['https://aiassistant-backend-webservice.onrender.com/', 'https://ai-assistant-three-eta.vercel.app/'],
+  origin: ['https://aiassistant-backend-webservice.onrender.com/', 'https://yoursmartmate.vercel.app/'],
   credentials: true, // if you use cookies or authorization headers
 }));
 app.use(express.json());
