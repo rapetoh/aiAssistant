@@ -1,5 +1,7 @@
 # AI-Powered Personal Chat Assistant
 
+https://github.com/user-attachments/assets/f4708019-e9ad-4c14-a433-6063677095da
+
 An intelligent chat assistant that provides context-aware responses based on your personal documents and data.
 
 ## Features
