@@ -1,4 +1,4 @@
-# AI-Powered Personal Chat Assistant & Job-Resume Matcher
+# AI-Powered Personal Chat Assistant & Job-Resume Matcher. 
 
 https://github.com/user-attachments/assets/f4708019-e9ad-4c14-a433-6063677095da
 
