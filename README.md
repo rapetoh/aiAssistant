@@ -8,9 +8,9 @@ An intelligent chat assistant that provides context-aware responses based on you
 
 - 📄 Document Upload: Support for PDF, text, and other document formats.
 - 🤖 AI-Powered Chat: Context-aware responses using OpenAI and LangChain.
-- 🔍 Document Analysis: Intelligent processing of uploaded documents
-- 💾 Document Management: Easy organization and retrieval of your documents
-- 🔒 Secure: Your data stays private and secure
+- 🔍 Document Analysis: Intelligent processing of uploaded documents.
+- 💾 Document Management: Easy organization and retrieval of your documents.
+- 🔒 Secure: Your data stays private and secure.
 
 ## Tech Stack
 
